@@ -1,0 +1,26 @@
+\documentclass[11pt,a4paper]{report}
+
+\input{./setup.tex}
+
+% Complexity-specific: disable end statements in algorithms
+\algrenewcommand\algorithmicend{}
+
+
+\begin{document}
+
+% \begin{center}
+%   \textsc{Universit\'e Gustave Eiffel} \hfill  \,\\
+% \end{center}
+\tableofcontents
+
+\include{sections/1-fdr-uniform}
+\include{sections/2-fdr-assignment}
+\include{sections/3-yield-and-max}
+\include{sections/4-sequences}
+% \include{sections/5-induction}
+\include{sections/6-simulation}
+\include{sections/7-stochastic-recurrences}
+\include{sections/8-yield}
+\include{sections/appendix}
+\printbibliography
+\end{document}

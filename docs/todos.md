@@ -1,0 +1,1 @@
+1. Compare the distribution in https://arxiv.org/pdf/2506.19123 and BST-like.

@@ -1,0 +1,1 @@
+1. Maybe the Kleene star tricks the literal extraction. It is possible to describe regular languages by the $*'$ operator for one or more repetition.

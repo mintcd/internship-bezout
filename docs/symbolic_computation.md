@@ -1,0 +1,1 @@
+Compute the CDFs $\mathbb{P}(Y_n\le k)=\sum_{i,j} a_{ij}u^iv^j$. So each row has properties $n$, $\texttt{longest\_length}$, $\texttt{u\_power}$, $\texttt{v\_power}$, $\texttt{coefficient}$

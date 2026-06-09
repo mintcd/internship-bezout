@@ -1,0 +1,1 @@
+1. Try using an error: $x_n = Cn^\alpha + \epsilon_n$.

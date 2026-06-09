@@ -1,0 +1,1 @@
+1. Assuming that FDR is very good. How to define a cost function?

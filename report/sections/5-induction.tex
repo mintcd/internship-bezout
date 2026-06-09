@@ -1,0 +1,169 @@
+\chapter{Induction}
+
+\begin{center}
+  April 30th, 2026
+  \vspace{0.5cm}
+\end{center}
+
+
+Consider the sequence $(x_n)$ defined by
+\begin{equation}
+  \label{eq:recurrence-ceil}
+  nx_{n+2} - (n-1)x_{n+1} = (a+b)x_n - b x_{\lceil n/2\rceil} + c, n\ge 1 \quad x_0 = x_1 = x_2 = 0,
+\end{equation}
+where $a,b$ and $c$ are constants such that $a\ge1, 0 \le b,c \le 1$ and $a+b\le 2$. Suppose that $x_n\ge 0$, for all $n\ge 3$.
+
+Note that from the recurrence (\ref{eq:recurrence-diff}), we easily have $x_n\ge 0$. If we assume that $(x_n)$ is increasing, then we get (\ref{eq:recurrence-ceil}). So we can assume $x_n\ge 0,\forall n\ge 1$ and continue to prove that $(x_n)$ is increasing. We currently cannot prove that $x_n\ge 0$ for all $n\ge 1$ right from (\ref{eq:recurrence-ceil}).
+
+\section{Increasingness}
+
+\begin{proposition}
+  \label{prop:recurrence-ceil}
+  Consider the sequence $(x_n)$ defined by
+  \begin{equation}
+    nx_{n+2} - (n-1)x_{n+1} = (a+b)x_n - b x_{\lceil n/2\rceil} + c, n\ge 1 \quad x_0 = x_1 = x_2 = 0,
+  \end{equation}
+  where $a,b$ and $c$ are constants such that $a\ge1, \quad 0 \le b,c \le 1$ and $a+b\le 2$. Suppose that $x_n\ge 0$, for all $n\ge 3$. Then $(x_n)$ is increasing.
+\end{proposition}
+
+% We want to prove that the sequence $(x_n)$ is increasing using induction. The initial inductive hypothesis leads to either equivalent or stronger statements. Let us organize the statements. We divide them into the unproved group and the granted group. If at some point we can ebstablish an implication from the granted group to a statement $A$ in the unproved group, then we can conclude that all statements weaker than $A$ in the unproved group are true.
+
+\subsection{Analysis}
+
+Let $\Delta_n = x_{n+1} - x_n$, we have $\Delta_1=0$ and $\Delta_2 = c$. Assume that $\Delta_k \ge 0$ for all $k \le n$. We have to show that $\Delta_{n+1} \ge 0$.
+
+Rewrite \ref{prop:recurrence-ceil} as
+\begin{equation}
+  n(x_{n+2} - x_{n+1}) + x_{n+1} - x_n = (a+b-1)x_n - b x_{\lceil n/2\rceil} + c.
+\end{equation}
+
+Let $t_n = (a+b-1)x_n - b x_{\lceil n/2\rceil} + c$. Then
+\begin{align*}
+  t_{n+1} - t_n = (a+b-1)(x_{n+1} - x_n) - b(x_{\lceil (n+1)/2\rceil} - x_{\lceil n/2\rceil}).
+\end{align*}
+
+Therefore, we have a new system
+
+$$\begin{cases}
+    n\Delta_{n+1} + \Delta_n = t_n, n\ge 3           \\
+    t_{2k} - t_{2k-1} = (a+b-1)\Delta_{2k-1}, k\ge 2 \\
+    t_{2k+1} - t_{2k} = (a+b-1)\Delta_{2k} - b\Delta_{k}, k\ge 2
+  \end{cases}$$
+
+From $\Delta_{n+1} = \dfrac{t_n - \Delta_n}{n}$, we have an equivalence of two unproved statements
+
+$$\Delta_{n+1} \ge 0 \iff t_n \ge \Delta_n.$$
+
+
+Also from $\Delta_{n+1} = \dfrac{t_n - \Delta_n}{n}$ we have the equivalence of two granted statements
+$$\Delta_{n-1} \ge 0 \iff \Delta_{n} \le \dfrac{t_{n-1}}{n-1}.$$
+
+If we can prove that $(n-1)t_n \ge t_{n-1}$, we are done. This is true for even $n$ according to the second equation of the system. For $n=2k+1$, we have
+\begin{align*}
+  2k t_{2k+1} - t_{2k}
+   & = (2k-1)t_{2k+1} + (a+b-1)\Delta_{2k} - b\Delta_{k}                                                         \\
+   & \ge (2k-1)[(a+b-1)x_{2k+1} - bx_{k+1} + c] - b\Delta_{k} & (\Delta_{2k} \ge 0)                              \\
+   & \ge (2k-1)[(a-1)x_{2k+1} + c] - b\Delta_{k}              & (x_{2k+1} \ge x_{k+1})                           \\
+   & \ge (2k-1)[(a-1)(\Delta_k + c)+c] - b\Delta_{k}          & \left(x_{2k+1}=\sum_{i=1}^{2k} \Delta_{i}\right) \\
+   & = (2k-1)ac + [(2k-1)(a-1)-b]\Delta_k
+\end{align*}
+Note that to use $x_{2k+1}\ge \Delta_k + \Delta_2 = \Delta_k + c$, we need $k\ge 3$. So we have to check the cases $n=3,4,5$ separately. Now we continue.
+
+If $a-1\ge b$, we are done.
+
+If $a-1 < b$. We will show that $(2k-1)ac \ge b\Delta_k$, or stronger, $\Delta_k \le (2k-1)c$. That leads us to define a stronger inductive hypothesis
+$$0 \le \Delta_k \le (2k-1)c, \forall 1\le k\le n.$$
+
+With that hypothesis, the lower bound is proved as before. For the upper bound, we have
+\begin{align*}
+  \Delta_{n+1}
+   & =  \dfrac{t_n-\Delta_n}{n} \le \dfrac{t_n}  {n}                                       & (\Delta_n\ge0)                         \\
+   & = \dfrac{(a+b-1)x_n - b x_{\lceil n/2\rceil} + c}{n}             \le \dfrac{x_n+c}{n} & (x_{\lceil n/2\rceil}\ge0, a+b\le 2)   \\
+   & = \dfrac{1}{n}\left(\sum_{i=1}^{n-1} \Delta_i + c\right)                                                                       \\
+   & \le \dfrac{1}{n}\left(\sum_{i=1}^{n-1} (2i-1)c + c\right)                             & (\Delta_i \le (2i-1)c, \forall i\le n) \\
+   & = c\dfrac{(n-1)^2 + 1}{n} \le (2n+1)c.
+\end{align*}
+
+\subsection{Proof}
+
+\begin{proof}
+  Let $\Delta_n = x_{n+1} - x_n$ and $t_n = (a+b-1)x_n - b x_{\lceil n/2\rceil} + c$. We have
+  $$\Delta_1 = 0, \Delta_2 = c, t_1 = c, t_2 = (a+b)c, \quad \text{and}$$
+  \begin{equation}
+    \begin{cases}
+      n\Delta_{n+1} + \Delta_n = t_n, n\ge 3           \\
+      t_{2k} - t_{2k-1} = (a+b-1)\Delta_{2k-1}, k\ge 2 \\
+      t_{2k+1} - t_{2k} = (a+b-1)\Delta_{2k} - b\Delta_{k}, k\ge 1
+    \end{cases}
+  \end{equation}
+
+  Let $d = a+b$, then $1\le d\le 2$. We have
+  \begin{align*}
+    \Delta_3 & = \dfrac{1}{2}(d-1)c,               & t_3 & = (2d-1)c                                     \\
+    \Delta_4 & = \dfrac{1}{6}\left(3d - 1\right)c, & t_4 & = \left(\dfrac{1}{2}(d-1)^2 + (2d-1)\right) c \\
+    \Delta_5 & = \dfrac{1}{24}(3(d-1)^2+9d-5)c.
+  \end{align*}
+
+
+  Assume that $0\le \Delta_m \le (2m-1)c$ for all $1\le m\le n$. We have to show that $0\le \Delta_{n+1} \le (2n+1)c$.
+
+  If $n=2k$, we have $(2k-1)t_{2k}-t_{2k-1} \ge t_{2k}-t_{2k-1} = (a+b-1)\Delta_{2k-1} \ge 0$
+
+  Hence $\Delta_{2k} = \dfrac{t_{2k-1} - \Delta_{2k-1}}{2k-1}  \le \dfrac{t_{2k-1}}{2k-1} \le t_{2k}.$
+
+  Hence $\Delta_{2k+1} = \dfrac{t_{2k} - \Delta_{2k}}{2k} \ge 0.$
+
+  If $n=2k+1$, we have $t_{2k+1} = (a+b-1)x_{2k+1} - bx_{k+1} + c \ge (a-1)x_{2k+1} + c \ge c$.
+
+  Hence $b\Delta_k \le (2k-1)c \le (2k-1)t_{2k+1}$
+
+  Hence $2kt_{2k+1} - t_{2k} = (2k-1)t_{2k+1} + (a+b-1)\Delta_{2k} - b\Delta_{k} \ge 0$.
+
+  Hence $\Delta_{2k+1} = \dfrac{t_{2k} - \Delta_{2k}}{2k} \le \dfrac{t_{2k}}{2k} \le t_{2k+1}$.
+
+  Hence $\Delta_{2k+2} = \dfrac{t_{2k+1} - \Delta_{2k+1}}{2k+1} \ge 0$.
+
+  The lower bound is proved. For the upper bound, we have do exactly the same calculation as in the analysis section.
+
+  \begin{align*}
+    \Delta_{n+1}
+     & =  \dfrac{t_n-\Delta_n}{n} \le \dfrac{t_n}  {n}                                       & (\Delta_n\ge0)                         \\
+     & = \dfrac{(a+b-1)x_n - b x_{\lceil n/2\rceil} + c}{n}             \le \dfrac{x_n+c}{n} & (x_{\lceil n/2\rceil}\ge0, a+b\le 2)   \\
+     & = \dfrac{1}{n}\left(\sum_{i=1}^{n-1} \Delta_i + c\right)                                                                       \\
+     & \le \dfrac{1}{n}\left(\sum_{i=1}^{n-1} (2i-1)c + c\right)                             & (\Delta_i \le (2i-1)c, \forall i\le n) \\
+     & = c\dfrac{(n-1)^2 + 1}{n} \le (2n+1)c.
+  \end{align*}
+\end{proof}
+
+\section{Asymptotic}
+
+\begin{proposition}
+  The generating function of the sequence $(x_n)$ is given by
+  \begin{equation}
+    z(1-z) X'(z) + (2z - 2 - (a+b)z^2) X(z) = -b z(1+z) X(z^2) + \frac{cz^3}{1-z}
+  \end{equation}
+\end{proposition}
+
+\subsection{Analysis}
+
+From (\ref{eq:recurrence-diff}), we can ignore the different terms and arrive at a polynomial growth. So we guess that $x_n \sim D n^{\alpha}$ for some constants $D$ and $\alpha$, that is $x_n = D n^{\alpha} + o(n^{\alpha})$. However, $x_{n+2}$ and $x_{n+1}$ are multiplied by a linear term, so let us assume a stronger hypothesis $x_n = D n^{\alpha} + o(n^{\alpha-1})$. Then,
+\begin{align*}
+  nx_{n+2}
+   & = n(D(n+2)^{\alpha} + o(n^{\alpha-1})) = D n^{\alpha+1}\left(1 + \frac{2}{n}\right)^\alpha + O(n^{\alpha}) \\
+   & = Dn^{\alpha+1}\left(1+\frac{2\alpha}{n} + o\left(\frac{1}{n^2}\right)\right) + o(n^{\alpha})              \\
+   & = D n^{\alpha+1} + 2\alpha D n^{\alpha} + o(n^{\alpha}).
+\end{align*}
+Similarly,
+\begin{align*}
+  (n-1)x_{n+1} = nx_{n+1} - x_{n+1} = D n^{\alpha+1} + (\alpha-1) D n^{\alpha} + o(n^{\alpha}).
+\end{align*}
+
+Hence,
+$$nx_{n+2} - (n-1)x_{n+1} = D \alpha n^{\alpha} + o(n^{\alpha}).$$
+On the other hand, we have
+$$(a+b)x_n - 2bx_{\lceil n/2\rceil} + c = D\left((a+b) n^{\alpha} - \dfrac{2b}{2^\alpha} n^{\alpha}\right) + o(n^{\alpha}).$$
+
+So we must have
+$$\alpha+1 = a+ b - b2^{-\alpha+1}.$$
+
+Experiments support this.

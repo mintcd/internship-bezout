@@ -1,0 +1,90 @@
+\chapter{Monte-Carlo Simulation for Checking Conjectures}
+\begin{center}
+  May 04, 2026
+  \vspace{0.5cm}
+\end{center}
+
+We want to check the conjecture that the stochastic fixed-point equation
+\begin{equation}
+  X \stackrel{d}{=} I(U^{\alpha}X^{(1)} + (1-U)^{\alpha}X^{(2)}) + J\max(U^{\alpha}X^{(1)}, (1-U)^{\alpha}X^{(2)})
+\end{equation}
+
+has a unique solution $(\alpha^*, X_{\alpha^*})$ such that $\mathbb{E}[X_{\alpha^*}] = 1$. Let $T_\alpha$ be the operator defined by the right-hand side of the equation, i.e.,
+\begin{equation}
+  T_\alpha(\mu) = I(U^{\alpha}X^{(1)} + (1-U)^{\alpha}X^{(2)}) + J\max(U^{\alpha}X^{(1)}, (1-U)^{\alpha}X^{(2)}), \quad X^{(1)}, X^{(2)} \overset{\text{iid}}{\sim} \mu.
+\end{equation}
+
+
+The classical contraction argument does not work. Since $X=0$ is always a solution, we cannot use the Wasserstein metric $W_p$. Since $T_\alpha$ can change the mean of the distribution, we cannot use the Zolotarev metric $\zeta_p$.
+
+\section{Background}
+\subsection{Empirical Distributions}
+
+Given a distribution $\mu$ and the number of particles $n$, we can sample
+$$X_1, X_2, \ldots, X_n \overset{\text{iid}}{\sim} \mu.$$
+The empirical distribution $\mu_n$ is
+$$\mu_n = \frac{1}{n} \sum_{i=1}^n \delta_{X_i}.$$
+
+\begin{definition}[Weak convergence of distributions]
+  Let $(M,d)$ be a metric space. Let $\M$ be the Borel $\sigma$-algebra on $M$. We define the distribution on $(M, \M)$. Let $C_b(M)$ be the set of real-valued, bounded, continuous functions on $M$.
+
+  A sequence of distributions $(\mu_n)$ converges weakly to a distribution $\mu$ if for $f\in C_b(M)$, we have
+  $$\int f \, d\mu_n \to \int f \, d\mu.$$
+\end{definition}
+
+\begin{theorem}[Varadarajan]
+  The sequence $\mu_n$ converges weakly to $\mu$ almost surely.
+\end{theorem}
+
+\begin{remark}
+  We need to study the rate of convergence, for simulation efficiency.
+\end{remark}
+
+By Continuous Mapping Theorem, we can do arithmetic operations on the empirical distributions.
+
+\begin{proposition}
+  Let $X_1, X_2, \ldots, X_n \overset{\text{iid}}{\sim} \mu$ and $\mu_N = \frac{1}{n} \sum_{i=1}^n \delta_{X_i}$. Let $f: M \to M$ be a continuous function. Then
+  $$\dfrac{1}{n}\sum\limits_{i=1}^n \delta_{f(X_i)} \stackrel{w}{\longrightarrow} f_{\#}\mu$$
+  almost surely.
+\end{proposition}
+
+We use the following particular cases
+
+\begin{enumerate}
+  \item When $f(x,y) = x + y$, then
+        $\dfrac{1}{n}\sum\limits_{i=1}^n \delta_{X_i + Y_i} \stackrel{w}{\longrightarrow} \L(X+Y)$
+        almost surely.
+  \item When $f(x,y) = \max(x,y)$, then
+        $\dfrac{1}{n}\sum\limits_{i=1}^n \delta_{\max(X_i, Y_i)} \stackrel{w}{\longrightarrow} \L(\max(X,Y))$
+        almost surely.
+  \item when $f(x,y) = xy$, then
+        $\dfrac{1}{n}\sum\limits_{i=1}^n \delta_{X_i Y_i} \stackrel{w}{\longrightarrow} \L(XY)$
+        almost surely.
+\end{enumerate}
+
+\begin{proposition}
+  Let $(\mu_n) be empirical measures$ such that $(\mu_n) \stackrel{w}{\longrightarrow} \mu$ almost surely and the $p$-th moment of $\mu$ is finite. Then
+  $$W_p(\mu_n, \mu) \to 0$$
+  almost surely.
+\end{proposition}
+
+Using the triangle inequality, we can show the following convergence result.
+
+\begin{proposition}[Convergence of Wasserstein distance]
+  \label{prop:Wasserstein_convergence}
+  Let $(\mu_n) \stackrel{w}{\longrightarrow} \mu$ almost surely and $\nu_n \stackrel{w}{\longrightarrow} \nu$ almost surely Then
+  $$W_p(\mu_n, \nu_n) \to W_p(\mu, \nu)$$
+  almost surely.
+\end{proposition}
+
+Proposition \ref{prop:Wasserstein_convergence} provides an $O(n\log n)$ algorithm to compute the empirical Wasserstein distance
+
+\begin{equation}
+  W_p(\mu_n, \nu_n) =  \frac{1}{n} \inf_{i,j} \left( \sum_{i=1}^n |X_i - Y_j|^p \right)^{1/p} = \frac{1}{n} \left(  \sum_{i=1}^n |\hat{X}_{i} - \hat{Y}_{i}|^p \right)^{1/p},
+\end{equation}
+where $(\hat{X}_1, \ldots, \hat{X}_n)$ and $(\hat{Y}_1, \ldots, \hat{Y}_n)$ are the sorted samples from $\mu_n$ and $\nu_n$, respectively.
+
+\subsection{Random Distributions}
+Our conjectures include convergence of distributions. We need a way to generate random distributions. In particular, we need to generate random distributions with mean 1. A straightforward way is to use a bank of parametric distributions, such as uniform, log-normal, and gamma distributions. The base distribution is chosen randomly from the bank, and the shape parameters are also randomized. Finally, we can normalize the distribution to have mean 1.
+
+A problem with the last approach is expressivity. Let us study Dirichlet processes.

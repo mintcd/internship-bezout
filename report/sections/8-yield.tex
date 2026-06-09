@@ -1,0 +1,136 @@
+\chapter{The Yield Recurrence}
+
+\begin{center}
+  May 13, 2026
+  \vspace{0.5cm}
+\end{center}
+
+The recurrence we consider in this section is the following.
+
+\begin{equation}
+  \label{eq:yield_indicator}
+  Y_{n+2} \stackrel{d}{=} I^{(n)}\left(Y_{U_n}^{(1)} + Y_{n+1-U_n}^{(2)} + 1\right) + J^{(n)}\max\left(Y_{U_n}^{(1)}, Y_{n+1-U_n}^{(2)}\right), \forall n\ge 1, \quad Y_1=Y_2=0.
+\end{equation}
+
+Let us explain the notations. Let $Y_n$ be the yield of the tree with $n$ nodes. The variables $I$ and $J$ are Bernoulli with expectation $u$ and $v$ respectively, such that $I + J \le 1$. That means we can only either take the sum-plus-one term, or the max term, or zero. The variable $U_n$ is uniformly distributed on $\{1, \ldots, n\}$. Superscripts are for independent copies. We assume that all collections of copies are independent. Now we can understand why it is correct to reuse the same variables $Y_{U_n}^{(1)}, Y_{n+1-U_n}^{(2)}$ and $U_n$ across both terms.
+
+
+\section{Lower and Upper Bounds of the Expectation}
+
+Let $y_n=\EE[Y_n]$. Take expectation on both sides, we have
+$$y_{n+2} = u + \dfrac{2u}{n}\sum_{i=1}^{n}y_i + \dfrac{v}{n}\sum_{i=1}^{n}\EE[\max(Y_i, Y_{n+1-i})].$$
+
+For an upper bound, using $\max(Y_i, Y_{n+1-i}) \le Y_i + Y_{n+1-i}$, we get an upper bound sequence
+\begin{equation}
+  \label{eq:upper_bound}
+  y_{n+2} = u + \dfrac{2(u+v)}{n}\sum_{i=1}^{n}y_i, \quad y_1=y_2=0.
+\end{equation}
+
+There are several ways to get a lower bound. The first one is to use convexity of the absolute value function.
+\begin{align*}
+  \EE[\max(Y_i, Y_{n+1-i})]
+   & = \EE\left[\dfrac{1}{2}(Y_i + Y_{n+1-i} + |Y_i - Y_{n+1-i}|)\right]                   \\
+   & \ge \dfrac{1}{2}(\EE[Y_i] + \EE[Y_{n+1-i}]) + \dfrac{1}{2}|\EE[Y_i] - \EE[Y_{n+1-i}]| \\
+   & = \dfrac{1}{2}(y_i + y_{n+1-i} + |y_i - y_{n+1-i}|).
+\end{align*}
+
+This gives
+\begin{equation}
+  \label{eq:lower_bound_difference}
+  y_{n+2} = u + \dfrac{2u+v}{n}\sum_{i=1}^{n}y_i + \dfrac{v}{2n}\sum_{i=1}^{n}|y_i - y_{n+1-i}|, \quad y_1=y_2=0.
+\end{equation}
+
+Another way is to use convexity of the max function.
+
+$$\EE[\max(Y_i, Y_{n+1-i})] \ge \max(\EE[Y_i], \EE[Y_{n+1-i}]) = \max(y_i, y_{n+1-i}) = y_{\max(i, n+1-i)}.$$
+
+This gives
+
+\begin{equation}
+  \label{eq:lower_bound_max}
+  y_{n+2} = u + \dfrac{2u}{n}\sum_{i=1}^{n}y_i + \dfrac{v}{n}\sum_{i=1}^{n}y_{\max(i, n+1-i)}, \quad y_1=y_2=0.
+\end{equation}
+
+If we can prove that $y_n$ is non-decreasing in $n$, then we can ignore the middle term in the sum of maxima, and get
+\begin{equation}
+  \label{eq:lower_bound_half_sum}
+  y_{n+2} = u + \dfrac{2u}{n}\sum_{i=1}^{n}y_i + \dfrac{2v}{n}\sum_{i=\lfloor (n+1)/2 \rfloor}^{n}y_{i}, \quad y_1=y_2=0.
+\end{equation}
+
+The weakest lower bound is to replace the max by the average, which gives
+\begin{equation}
+  \label{eq:lower_bound_average}
+  y_{n+2} = u + \dfrac{2u+v}{n}\sum_{i=1}^{n}y_i, \quad y_1=y_2=0.
+\end{equation}
+
+When $2u+v>1$, the true expectation is bounded between by polynomial of degrees $2u+v-1$ and $2(u+v)-1$. This case agrees with real data. We conjecture that the true expectation also grows polynomially. Details of the analysis of the deterministic recurrences are in Chapter~\ref{chap:sequences}.
+
+\section{Combinatorial Analysis}
+
+For convenience, let us shift the index. The recurrence becomes
+\begin{equation}
+  \label{eq:yield_indicator-shifted}
+  Y_{n+1} \stackrel{d}{=} I^{(n)}\left(Y_{U_n}^{(1)} + Y_{n-1-U_n}^{(2)} + 1\right) + J^{(n)}\max\left(Y_{U_n}^{(1)}, Y_{n-1-U_n}^{(2)}\right), \forall n\ge 1, \quad Y_0=Y_1=0.
+\end{equation}
+
+The variable $U_n$ is now distributed on $\{0, \ldots, n-1\}$. Let $p_{n,m} = \PP(Y_n = m)$ and $q_{n,m} = \PP(Y_n\le m)$. We have the relations
+$$p_{n,m} = q_{n,m} - q_{n, m-1} \text{ and } q_{n,m}=\sum\limits_{i=0}^{n-1} p_{i,m},$$
+and initial conditions
+$$p_{0,0} = p_{1,0} = 1 \text{ and } q_{0,m} = q_{1,m} = 1 \text{ for all } m \ge 0.$$
+
+From the recurrence, we have
+\begin{align*}
+   & nq_{n+1, m}                                                                                                                                              \\
+   & = nu \PP\left(Y_{U_n}^{(1)} + Y_{n-1-U_n}^{(2)} + 1 \le m\right) + nv \PP\left(\max\left(Y_{U_n}^{(1)}, Y_{n-1-U_n}^{(2)}\right) \le m\right) + n(1-u-v) \\
+   & = u\sum_{i=0}^{n-1} \sum_{j=0}^{m-1} p_{i,j}q_{n-1-i, m-1-j} + v\sum_{i=0}^{n-1} q_{i, m} q_{n-1-i, m}+n(1-u-v)                                          \\
+   & = u\left(\sum_{i=0}^{n-1} \sum_{j=0}^{m-1} q_{i, j} q_{n-1-i,m-1-j} - \sum_{i=0}^{n-1} \sum_{j=0}^{m-2} q_{i, j}q_{n-1-i,m-2-j} \right)                  \\
+   & \,\,\,\,\,\,\,\,\,\,\,+ v\sum_{i=0}^{n-1} q_{i, m} q_{n-1-i, m}+n(1-u-v).
+\end{align*}
+Let $Q_m(z) = \sum\limits_{n=0}^\infty q_{n,m}z^n$ be the generating function of $q_{n,m}$ when $m$ is fixed. Multiplying both sides by $z^{n-1}$ and summing over $n$, we get
+$$\sum_{n=0}^\infty n \, q_{n+1, m} z^{n-1} = \frac{d}{dz} \sum_{n=0}^\infty q_{n+1, m} z^{n} = \frac{d}{dz}\left( \frac{Q_m(z) - 1}{z} \right) = \frac{z Q_m'(z) - Q_m(z) + 1}{z^2},$$
+$$\sum_{n=0}^{\infty} \sum_{i=0}^{n-1} \sum_{j=0}^{m-1} q_{i, j} q_{n-1-i, m-1-j}z^{n-1} = \sum\limits_{j=0}^{m-1} Q_j(z)Q_{m-1-j}(z),$$
+$$\sum_{n=0}^{\infty} \sum_{i=0}^{n-1} \sum_{j=0}^{m-2} q_{i, j} q_{n-1-i, m-2-j}z^{n-1}  = \sum\limits_{j=0}^{m-2} Q_j(z)Q_{m-2-j}(z),$$
+$$\sum_{n=0}^\infty\sum_{i=0}^{n-1} q_{i, m} q_{n-1-i, m}z^{n-1} = Q_m(z)^2,$$
+$$\sum_{n=1}^\infty n(1-u-v)z^{n-1} = \frac{1-u-v}{(1-z)^2}.$$
+We get the following functional equation for $Q_m(z)$.
+
+\begin{equation}
+  \label{eq:yield_indicator_functional_equation}
+  \begin{aligned}
+    z Q_m'(z) - Q_m(z) + 1
+     & = z^2\left(u \sum_{j=0}^{m-1} Q_j(z)Q_{m-1-j}(z) - u \sum_{j=0}^{m-2} Q_j(z)Q_{m-2-j}(z) + v Q_m(z)^2\right) \\
+     & \,\,\,\,\,\,\,\,\,\,+ \frac{(1-u-v)z^2}{(1-z)^2}.
+  \end{aligned}
+\end{equation}
+In particular, when $m=0$, we have
+\begin{equation}
+  \label{eq:yield_indicator_functional_equation_m0}
+  z Q_0'(z) - Q_0(z) + 1 = v z^2 Q_0(z)^2 + \frac{(1-u-v)z^2}{(1-z)^2}.
+\end{equation}
+
+By the convention of Riccati equations, let $Q_0(z) = -\dfrac{1}{v z}\dfrac{W'(z)}{W(z)}$, we have
+$$z\left(\dfrac{1}{vz^2}\dfrac{W'(z)}{W(z)}-\dfrac{1}{vz}\dfrac{W''(z)W(z)-W'(z)^2}{W(z)^2}\right) + \dfrac{1}{v z}\dfrac{W'(z)}{W(z)} + 1 = \dfrac{1}{v}\dfrac{W'(z)^2}{W(z)^2} + \frac{(1-u-v)z^2}{(1-z)^2}.$$
+Equivalently,
+\begin{equation}
+  \label{eq:W_ODE}
+  W''(z) - \dfrac{2}{z} W'(z) - v\left(1 - \frac{(1-u-v)z^2}{(1-z)^2}\right) W(z) = 0.
+\end{equation}
+
+Our approach follows closely \cite{koechlin2024effects}.
+
+\textbf{Step 1.} By Cauchy-Hadamard theorem, the radius of convergence of $Q_0(z)$ is larger than or equal to 1. Suppose that it is strictly larger than 1. Then $Q_0(z), Q'_0(z)$ is finite. Taking the limit of both sides of \eqref{eq:yield_indicator_functional_equation_m0} as $z\to 1^-$, we get a contradiction. Therefore, the radius of convergence of $Q_0(z)$ is exactly 1.
+
+\textbf{Step 2.} We find the indicial equation of the ODE at $z=1$.
+$$\delta_1 = \lim_{z\to 1} (z-1) \left(-\dfrac{2}{z}\right) = 0,$$
+$$\delta_2 = \lim_{z\to 1} -(z-1)^2 v\left(1-\frac{(1-u-v)z^2}{(1-z)^2}\right) = \lim_{z\to 1} -v\left((z-1)^2 -(1-u-v)z^2\right) = v(1-u-v).$$
+Solving $I(\theta) = \theta(\theta-1) + \delta_1\theta + \delta_2 = 0$, we get
+$$\theta_{\pm} = \frac{1 \pm \sqrt{1-4v(1-u-v)}}{2}.$$
+We have $\theta_+ - \theta_- = \sqrt{1-4v(1-u-v)}\in [0,1]$. Choose the star-shaped domain $\tilde{\Omega} = (\CC \setminus [1, \infty)) \cap D(3/4,1/2)$. There are two cases for the solution of the ODE in $\tilde{\Omega}$ near $z=1$.
+\begin{enumerate}
+  \item If $v(1-u-v) < \dfrac{1}{4}$, then
+        $$W(z) = c_1(1-z)^{\theta_+}H_1(1-z) + c_2(1-z)^{\theta_-}H_2(1-z).$$
+  \item If $v(1-u-v) = \dfrac{1}{4}$, then $u=0$ and $v=\dfrac{1}{2}$. Hence,
+        $$W(z) = (1-z)^{1/2}\left(c_1H_1(1-z) + c_2\log(1-z)H_2(1-z)\right).$$
+\end{enumerate}
+
+\textbf{Step 3.} We pass the asymptotic information of $W(z)$ to $Q_0(z)$.

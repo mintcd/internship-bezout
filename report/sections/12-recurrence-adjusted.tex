@@ -1,0 +1,117 @@
+\chapter[Adjusted Recurrence and Documentation of Attempts]{Adjusted Recurrence and \\ Documentation of Attempts}
+
+\begin{center}
+  June 05, 2026
+  \vspace{0.5cm}
+\end{center}
+
+\section{Adjusted Recurrence}
+
+It is simpler to consider $Y_n$ as the longest length of the literals in a regex tree of $n$ nodes.
+\begin{equation}
+  Y_{n+2} \stackrel{d}{=} I^{(n)}\left(Y_{U_n}^{(1)} + Y_{n+1-U_n}^{(2)}\right) + J^{(n)}\max\left(Y_{U_n}^{(1)}, Y_{n+1-U_n}^{(2)}\right), n\ge 1, \quad Y_1=1, Y_2=0.
+\end{equation}
+
+Superscripts are for independent copies. We assume that all collections of copies are independent. The variable $U_n$ is uniformly distributed on $\{1, \ldots, n\}$. The random variables $I$ and $J$ are Bernoulli with expectation $u$ and $v$ respectively, such that $I + J \le 1$. That means we can only either take the sum-plus-one term, or the max term, or zero. Hence it is correct to reuse the same variables $Y_{U_n}^{(1)}, Y_{n+1-U_n}^{(2)}$ and $U_n$ across both terms.
+
+Let us summarize the attempts we have made to analyze the asymptotic of this recurrence. We point out the reason why each direction does not work, or is hard to be continued. In the followings, we mean by \textbf{Conjectures} statements that are supported by Monte-Carlo simulations, but we do not have a proof for them.
+
+\section{Contraction Method}
+We want to prove that $\EE[Y_n]\sim Cn^\alpha$ for some constants $C>0$ and $\alpha>0$. So we try to prove that $\dfrac{Y_n}{n^\alpha}\xrightarrow{d} X$ for some random variable $X$ and $\EE[X]=C$. Let $Y_n = n^\alpha X_n$, we have the following recurrence for $X_n$.
+\begin{equation}
+  \begin{aligned}
+     & \begin{aligned}
+         X_{n+2}
+         \stackrel{d}{=}\,\, & I^{(n)}\left(\left(\dfrac{U_n}{n+2}\right)^\alpha X_{U_n}^{(1)} + \left(\dfrac{n+1-U_n}{n+2}\right)^\alpha X_{n+1-U_n}^{(2)}\right) +           \\
+                             & J^{(n)}\max\left(\left(\dfrac{U_n}{n+2}\right)^\alpha X_{U_n}^{(1)}, \left(\dfrac{n+1-U_n}{n+2}\right)^\alpha X_{n+1-U_n}^{(2)}\right), n\ge 1,
+       \end{aligned} \\
+     & X_1=1, X_2=0.
+  \end{aligned}
+\end{equation}
+
+Assuming $X_n\xrightarrow{d} X$, taking the limit on both sides yields
+\begin{equation}
+  \label{eq:limiting_equation}
+  X \stackrel{d}{=} I\left(U^\alpha X^{(1)} + \left(1-U\right)^\alpha X^{(2)}\right) + J\max\left(U^\alpha X^{(1)}, \left(1-U\right)^\alpha X^{(2)}\right),
+\end{equation}
+where $U$ is uniformly distributed on $[0,1]$. Following the contraction method, we want to prove or disprove that
+\begin{enumerate}
+  \item There exists a unique $\alpha$ such that \eqref{eq:limiting_equation} has a non-degenerate solution $X$ with $\EE[X]=C$ for some constant $C>0$. By homogeneity, we can assume that $C=1$.
+  \item $X_n\xrightarrow{d} X$.
+\end{enumerate}
+
+Standard practice is hard to follow. One has to find a complete metric space of distributions $(\D, d)$ such that the operator
+\begin{equation}
+  \label{eq:operator_T}
+  T(\mu) = \mathcal{L}\left(I\left(U^\alpha X^{(1)} + \left(1-U\right)^\alpha X^{(2)}\right) + J\max\left(U^\alpha X^{(1)}, \left(1-U\right)^\alpha X^{(2)}\right)\right), \quad X^{(1)}, X^{(2)} \stackrel{\text{iid}}{\sim} \mu.
+\end{equation}
+Firstly, $\D$ must not contain $\delta_0$, the Dirac measure at zero, since then if $T$ was contractive, then $\delta_0$ would be its unique fixed point, which is not what we want. Secondly, loose equality over the Wasserstein metric is not enough to show a contraction, that is, we have to exploit information of $\alpha$ to derive contraction, which we do not have yet.
+
+When switching to the Zolotarev metric, we have to preserve at least the mean. A strategy is as follows.
+
+\begin{conjecture}
+  The operator $S(\mu) = \dfrac{T(\mu)}{\EE[Y]}$ is contractive for every $0 \le \alpha \le 1$, where $Y\sim T(\mu)$.
+\end{conjecture}
+
+\begin{conjecture}
+  For every distribution $X\sim\mu$ with $\EE[X]=1$, there exists a unique $\alpha\in(0,1]$ such that $\EE_{Y\sim T(\mu)}[Y] = 1$.
+\end{conjecture}
+
+\begin{remark}
+  We can prove that the function
+
+  $$f(\alpha) = \EE[Y] = \dfrac{2u}{\alpha+1} + v\EE\left[\max\left(U^\alpha X^{(1)}, (1-U)^\alpha X^{(2)}\right)\right]$$
+
+  is strictly decreasing. We then evaluate $f$ at the endpoints.
+  $$\lim_{\alpha \to 0+} f(\alpha) = 2u+v > 1,$$
+  $$f(1) = u + v\EE\left[\max\left(U^\alpha X^{(1)}, (1-U)^\alpha X^{(2)}\right)\right] \le u+v \le 1.$$
+
+  % However, continuity of $f$ depends on the specific metric $d$.
+\end{remark}
+
+
+\begin{proposition}
+  If $X$ is a non-degenerate solution to \eqref{eq:limiting_equation}, then $\PP(X=0) = \dfrac{1}{u+v}-1$.
+\end{proposition}
+\begin{proof}
+  We have
+  \begin{align*}
+    \PP(X=0)
+     & = \PP(I=J=0) + (\PP(I=1)+\PP(J=1))\PP\left(U^\alpha X^{(1)} = (1-U)^\alpha X^{(2)} = 0\right)                        \\
+     & = 1-u-v + (u+v)\int_0^\infty \PP\left(u^\alpha X^{(1)} = (1-u)^\alpha X^{(2)} = 0 \mid U=u\right)f_U(u)\,\mathrm{d}u \\
+     & = 1-u-v + (u+v)\int_0^\infty \PP\left(X^{(1)} = X^{(2)} = 0\right)f_U(u)\,\mathrm{d}u                                \\
+     & = 1-u-v + (u+v)\int_0^\infty \PP(X=0)^2 f_U(u)\,\mathrm{d}u                                                          \\
+     & = 1-u-v + (u+v)\PP(X=0)^2                                                                                            \\
+  \end{align*}
+  Solving the quadratic equation gives the result.
+\end{proof}
+
+Now we consider the fixed-point equation \eqref{eq:limiting_equation} as a recurrence.
+\begin{equation}
+  \tilde{X}_{n+1} \stackrel{d}{=} I^{(n)}\left(U_n^\alpha \tilde{X}_{n}^{(1)} + (1-U_n)^\alpha \tilde{X}_{n}^{(2)}\right) + J^{(n)}\max\left(U_n^\alpha \tilde{X}_{n}^{(1)}, (1-U_n)^\alpha \tilde{X}_{n}^{(2)}\right), n\ge 0,
+\end{equation}
+where $\tilde{X}_0$ is a Bernoulli random variable with $\PP(\tilde{X}_0=0) = \dfrac{1}{u+v}-1$.
+
+The intuition at this point is that the solution must be in the space $\D_1$ of distributions with mass $\dfrac{1}{u+v}-1$ at zero. So we focus on that space at the beginning. This is correct because then the operator $T$ as in Equation \eqref{eq:operator_T} maps $\D_1$ into itself. Let $Z_n \stackrel{d}{=} \tilde{X}_n \,|\, \tilde{X}_n > 0$. We have
+\begin{align*}
+  Z_{n+1}\stackrel{d}{=} \left(I^{(n)}\left(U_n^\alpha \tilde{X}_{n}^{(1)} + (1-U_n)^\alpha \tilde{X}_{n}^{(2)}\right) + J^{(n)}\max\left(U_n^\alpha \tilde{X}_{n}^{(1)}, (1-U_n)^\alpha \tilde{X}_{n}^{(2)}\right)\right) \Big| \tilde{X}_{n+1} > 0.
+\end{align*}
+We have $\PP\left(I^{(n)}=J^{(n)}=0\right)=1-u-v$. Firstly, we branch on the cases where $I^{(n)}=1$ and $J^{(n)}=1$, with probabilities $u/(u+v)$ and $v/(u+v)$ respectively. Let $w = \dfrac{1}{u+v}$, we have on the other hand that $\PP\left(\tilde{X}_{n}^{(1)} = \tilde{X}_{n}^{(2)} = 0\right) = \left(w-1\right)^2$. Hence, we continue branching on the following cases
+\begin{itemize}
+  \item $X^{(1)}, X^{(2)}> 0$ with probability $\dfrac{2-w}{w}$,
+  \item Since $U^\alpha X^{(1)} \stackrel{d}{=} (1-U)^\alpha X^{(2)}$, we use symmetry and consider the union probability of one of them being zero, which is $\dfrac{2(w-1)}{w}$.
+\end{itemize}
+Therefore,
+\begin{equation}
+  Z_{n+1} \stackrel{d}{=}
+  \begin{cases}
+    U_n^\alpha Z_{n}^{(1)} + (1-U_n)^\alpha Z_{n}^{(2)},
+     & \text{prob. } u(2-w),   \\
+    \max\left(U_n^\alpha Z_{n}^{(1)}, (1-U_n)^\alpha Z_{n}^{(2)}\right),
+     & \text{prob. } v(2-w),   \\
+    U_n^\alpha Z_{n},
+     & \text{prob. } 2(1-1/w).
+  \end{cases}
+\end{equation}
+
+An advantage is that we can start from $Z_0\sim\delta_1$, where $\delta_1$ is the Dirac measure at one.
