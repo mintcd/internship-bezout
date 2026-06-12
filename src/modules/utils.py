@@ -55,7 +55,7 @@ def latex_print(text: object,
         if not (color or bgcolor or bold or italic or monospace):
             try:
                 from IPython.display import Math
-                from IPython.core.getipython import get_ipython
+                from IPython import get_ipython
 
                 def _safe_display_latex(latex_candidate: object) -> bool:
                     """Safely display LaTeX via `Math` if small; otherwise show
@@ -173,3 +173,17 @@ def latex_print(text: object,
     print(prefix + s + suffix)
 
 __all__ = ['latex_print']
+
+def report_memory(obj):
+  try:
+    bytes_alloc = obj.nbytes
+  except Exception:
+      import sys
+      bytes_alloc = sys.getsizeof(obj)
+  def _format_bytes(n):
+      for unit in ['B','KB','MB','GB','TB']:
+          if n < 1024.0:
+              return f"{n:.2f}{unit}"
+          n /= 1024.0
+      return f"{n:.2f}PB"
+  print(f"Allocated memory for 'history': {_format_bytes(bytes_alloc)} ({bytes_alloc} bytes)")

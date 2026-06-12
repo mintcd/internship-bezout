@@ -1,6 +1,6 @@
 """Utility helpers for notebooks and console output.
 
-Provides `styled_print` which renders HTML-styled output when running
+Provides `latex_print` which renders HTML-styled output when running
 inside a Jupyter environment, and falls back to ANSI-colored console
 output otherwise.
 
@@ -16,7 +16,7 @@ except Exception:
 import html as _html
 import re as _re
 
-def styled_print(text: object,
+def latex_print(text: object,
                  color: Optional[str] = None,
                  bgcolor: Optional[str] = None,
                  bold: bool = False,
@@ -172,4 +172,4 @@ def styled_print(text: object,
     suffix = '\x1b[0m' if codes else ''
     print(prefix + s + suffix)
 
-__all__ = ['styled_print']
+__all__ = ['latex_print']
