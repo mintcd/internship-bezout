@@ -7,14 +7,14 @@
 
 \section{Adjusted Recurrence}
 
-It is simpler to consider $Y_n$ as the longest length of the literals in a regex tree of $n$ nodes.
+It is simpler to define $Y_n$ as the maximum length of a literal in a regex tree with $n$ nodes.
 \begin{equation}
   Y_{n+2} \stackrel{d}{=} I^{(n)}\left(Y_{U_n}^{(1)} + Y_{n+1-U_n}^{(2)}\right) + J^{(n)}\max\left(Y_{U_n}^{(1)}, Y_{n+1-U_n}^{(2)}\right), n\ge 1, \quad Y_1=1, Y_2=0.
 \end{equation}
 
-Superscripts are for independent copies. We assume that all collections of copies are independent. The variable $U_n$ is uniformly distributed on $\{1, \ldots, n\}$. The random variables $I$ and $J$ are Bernoulli with expectation $u$ and $v$ respectively, such that $I + J \le 1$. That means we can only either take the sum-plus-one term, or the max term, or zero. Hence it is correct to reuse the same variables $Y_{U_n}^{(1)}, Y_{n+1-U_n}^{(2)}$ and $U_n$ across both terms.
+Superscripts denote mutually independent copies. The variable $U_n$ is uniformly distributed on $\{1, \ldots, n\}$. The variables $I$ and $J$ are Bernoulli distributed with expectations $u$ and $v$ respectively, such that $I + J \le 1$. This implies we take either the sum term, the max term, or zero. Therefore, we can reuse the same variables $Y_{U_n}^{(1)}, Y_{n+1-U_n}^{(2)}$ and $U_n$ across both terms.
 
-Let us summarize the attempts we have made to analyze the asymptotic of this recurrence. We point out the reason why each direction does not work, or is hard to be continued. In the followings, we mean by \textbf{Conjectures} statements that are supported by Monte-Carlo simulations, but we do not have a proof for them.
+
 
 \section{Contraction Method}
 We want to prove that $\EE[Y_n]\sim Cn^\alpha$ for some constants $C>0$ and $\alpha>0$. So we try to prove that $\dfrac{Y_n}{n^\alpha}\xrightarrow{d} X$ for some random variable $X$ and $\EE[X]=C$. Let $Y_n = n^\alpha X_n$, we have the following recurrence for $X_n$.
@@ -40,35 +40,46 @@ where $U$ is uniformly distributed on $[0,1]$. Following the contraction method,
   \item $X_n\xrightarrow{d} X$.
 \end{enumerate}
 
-Standard practice is hard to follow. One has to find a complete metric space of distributions $(\D, d)$ such that the operator
+The standard approach can be tricky to apply. We must define a complete metric space of distributions $(\D, d)$ such that the operator
 \begin{equation}
   \label{eq:operator_T}
-  T(\mu) = \mathcal{L}\left(I\left(U^\alpha X^{(1)} + \left(1-U\right)^\alpha X^{(2)}\right) + J\max\left(U^\alpha X^{(1)}, \left(1-U\right)^\alpha X^{(2)}\right)\right), \quad X^{(1)}, X^{(2)} \stackrel{\text{iid}}{\sim} \mu.
+  T_\alpha(\mu) = \mathcal{L}\left(I\left(U^\alpha X^{(1)} + \left(1-U\right)^\alpha X^{(2)}\right) + J\max\left(U^\alpha X^{(1)}, \left(1-U\right)^\alpha X^{(2)}\right)\right), \quad X^{(1)}, X^{(2)} \stackrel{\text{iid}}{\sim} \mu.
 \end{equation}
-Firstly, $\D$ must not contain $\delta_0$, the Dirac measure at zero, since then if $T$ was contractive, then $\delta_0$ would be its unique fixed point, which is not what we want. Secondly, loose equality over the Wasserstein metric is not enough to show a contraction, that is, we have to exploit information of $\alpha$ to derive contraction, which we do not have yet.
+First, $\D$ must not contain $\delta_0$ (the Dirac measure at zero); otherwise, if $T_\alpha$ were contractive, $\delta_0$ would be its unique fixed point---which is undesirable. Secondly, loose inequalities under the Wasserstein metric are not enough to prove contraction, that is, we have to exploit information of $\alpha$ to derive contraction, which we do not have yet.
 
 When switching to the Zolotarev metric, we have to preserve at least the mean. A strategy is as follows.
 
-\begin{conjecture}
-  The operator $S(\mu) = \dfrac{T(\mu)}{\EE[Y]}$ is contractive for every $0 \le \alpha \le 1$, where $Y\sim T(\mu)$.
-\end{conjecture}
+\subsection{Rescaling}
 
-\begin{conjecture}
-  For every distribution $X\sim\mu$ with $\EE[X]=1$, there exists a unique $\alpha\in(0,1]$ such that $\EE_{Y\sim T(\mu)}[Y] = 1$.
-\end{conjecture}
+\begin{proposition}
+  Let $X\sim\mu$ such that $X\ge 0, a.s.$ and $\EE[X]=1$. Then there exists a unique $\alpha\in(0,1]$ such that $\EE_{Y\sim T_\alpha(\mu)}[Y] = 1$.
+\end{proposition}
+\begin{proof}
+  Let
+  $$f(\alpha) = \EE[Y] = \dfrac{2u}{\alpha+1} + v\EE\left[\max\left(U^\alpha X^{(1)}, (1-U)^\alpha X^{(2)}\right)\right], \quad\alpha\in [0,1].$$
 
-\begin{remark}
-  We can prove that the function
+  We will show that there exists a unique $\alpha\in(0,1]$ such that $f(\alpha)=1$. It is clear that $f$ is strictly decreasing in $\alpha$. Next, we show that $f$ is continuous. The first term is continuous. We will show that the second term is Lipschitz continuous. Let $\alpha, \alpha' \in [0,1]$ and assume without loss of generality that $\alpha < \alpha'$. We have
+  \begin{align*}
+     & \EE\left[\max\left(U^\alpha X^{(1)}, (1-U)^\alpha X^{(2)}\right) - \max\left(U^{\alpha'} X^{(1)}, (1-U)^{\alpha'} X^{(2)}\right)\right] \\
+     & \le \EE\left[\left|U^\alpha - U^{\alpha'}\right|\right] + \EE\left[\left|(1-U)^\alpha - (1-U)^{\alpha'}\right|\right]                   \\
+     & = 2\EE\left[\left|U^\alpha - U^{\alpha'}\right|\right]
+     & \text{($U \stackrel{d}{=} 1-U$)}                                                                                                        \\
+     & = 2\EE\left[U^\alpha - U^{\alpha'}\right]
+     & \text{($U^\alpha\ge U^{\alpha'}, a.s.$)}                                                                                                \\
+     & = \dfrac{2}{\alpha+1} - \dfrac{2}{\alpha'+1} = \dfrac{2(\alpha-\alpha')}{(\alpha+1)(\alpha'+1)}                                         \\
+     & \le 2|\alpha-\alpha'|.
+  \end{align*}
 
-  $$f(\alpha) = \EE[Y] = \dfrac{2u}{\alpha+1} + v\EE\left[\max\left(U^\alpha X^{(1)}, (1-U)^\alpha X^{(2)}\right)\right]$$
-
-  is strictly decreasing. We then evaluate $f$ at the endpoints.
-  $$\lim_{\alpha \to 0+} f(\alpha) = 2u+v > 1,$$
+  Finally, we evaluate $f$ at the endpoints.
+  $$\lim_{\alpha \to 0+} f(\alpha) = 2u+v\EE\left[\max\left(X^{(1)}, X^{(2)}\right)\right] > 2u+v > 1,$$
   $$f(1) = u + v\EE\left[\max\left(U^\alpha X^{(1)}, (1-U)^\alpha X^{(2)}\right)\right] \le u+v \le 1.$$
+\end{proof}
 
-  % However, continuity of $f$ depends on the specific metric $d$.
-\end{remark}
+\begin{conjecture}
+  The operator $S(\mu) = \dfrac{T_\alpha(\mu)}{\EE_{Y\sim T_\alpha(\mu)}[Y]}$ is contractive for every $\alpha\in(0,1]$.
+\end{conjecture}
 
+\subsection{Early Start}
 
 \begin{proposition}
   If $X$ is a non-degenerate solution to \eqref{eq:limiting_equation}, then $\PP(X=0) = \dfrac{1}{u+v}-1$.
@@ -114,4 +125,77 @@ Therefore,
   \end{cases}
 \end{equation}
 
-An advantage is that we can start from $Z_0\sim\delta_1$, where $\delta_1$ is the Dirac measure at one.
+An advantage is that we can start from $Z_0\sim\delta_1$, where $\delta_1$ is the Dirac measure at one. At the fixed point, using
+
+$$\EE\left[\max\left(U^\alpha Z^{(1)}, (1-U)^\alpha Z^{(2)}\right)\right] \ge \dfrac{1}{\alpha+1}\max\left(\EE\left[Z^{(1)}\right], \EE\left[Z^{(2)}\right]\right),$$
+
+we get a better lower bound for $\alpha$.
+
+\subsection{Double Update}
+
+A technique to track the fact that $\text{Var}(X_k)$ is stochastic ordering. To deal with the max term, we introduce the convex order and the increasing convex order. We work with the space $\D_2(1)$ of distributions with mean 1 and finite second moment. We slightly abuse the notation and write $X\in\D_2(1)$ if $\L(X)\in\D_2(1)$. It is also possible to define the operator $T_\alpha$ for random variables by choosing one version of the output distribution
+\begin{equation}
+  T_\alpha(X) = I\left(U^\alpha X^{(1)} + \left(1-U\right)^\alpha X^{(2)}\right) + J\max\left(U^\alpha X^{(1)}, \left(1-U\right)^\alpha X^{(2)}\right),\,\,\, X^{(1)}, X^{(2)} \stackrel{\text{iid}}{\sim} X.
+\end{equation}
+We will also rewrite the function $f$ as
+\begin{equation}
+  f(X, \alpha) = \EE_{Y\sim T_\alpha(X)}[Y]=\dfrac{2u}{\alpha+1} + v\EE_{X^{(1)}, X^{(2)} \stackrel{\text{iid}}{\sim} X}\left[\max\left(U^\alpha X^{(1)}, \left(1-U\right)^\alpha X^{(2)}\right)\right].
+\end{equation}
+
+\begin{definition}[{Convex order \cite[Sec.~3.A]{bickel2009springer}}]
+  Let $X$ and $Y$ be two random variables such that
+  $$\EE[\phi(X)]\le \EE[\phi(Y)] \text{ for every convex function } \phi:\RR\to\RR,$$
+  provided the expectations exist. Then we say that $X$ is smaller than $Y$ in convex order, denoted by $X\le_{\text{cx}} Y$.
+\end{definition}
+
+\begin{definition}[{Increasing convex order \cite[Sec.~3.A]{bickel2009springer}}]
+  Let $X$ and $Y$ be two random variables such that
+  $$\EE[\phi(X)]\le \EE[\phi(Y)] \text{ for every increasing convex function } \phi:\RR\to\RR,$$
+  provided the expectations exist. Then we say that $X$ is smaller than $Y$ in increasing convex order, denoted by $X\le_{\text{icx}} Y$.
+\end{definition}
+
+It is clear that $X\le_{\text{cx}} Y$ implies $X\le_{\text{icx}} Y$ and $\text{Var}(X)\le \text{Var}(Y)$. The reason why we introduce the increasing convex order is that the set of increasing convex functions is closed under composition. The lemma below is for real-valued functions, which is enough for our purpose.
+
+\begin{lemma}
+  \label{lem:composition}
+  Let $f:\RR\to \RR$ and $g:\RR\to \RR$ be increasing convex functions. Then $g\circ f:\RR^2\to \RR$ is also an increasing convex function.
+\end{lemma}
+
+The other reason is that the two notions are equivalent for distributions with the same mean. Showing that the variance is increasing and converges is then reduced to showing that $X_k\le_{\text{icx}} X_{k+1}$ for every $k\ge 0$.
+
+
+\begin{lemma}
+  \label{lem:f_icx}
+  Let $X\le_{\text{icx}} Y$, then for every $\alpha\in (0,1]$, we have $f(X, \alpha)\le f(Y, \alpha)$.
+\end{lemma}
+\begin{proof}
+  For every $u\in[0,1]$ and $\alpha\in (0,1]$, define
+  $$g(x,y) = \max(u^\alpha x, (1-u)^\alpha y), \quad x,y\ge 0.$$
+  Then $x\mapsto g(x,y)$ and $y\mapsto g(x,y)$ are increasing convex functions. Hence, we have
+  $$\EE\left[g\left(X^{(1)}, y\right)\right] \le \EE\left[g\left(X^{(2)}, y\right)\right].$$
+  Integrating over $Y^{(1)}$, we get
+  $$\EE\left[g\left(X^{(1)}, Y^{(1)}\right)\right] \le \EE\left[g\left(X^{(2)}, Y^{(1)}\right)\right].$$
+  Similarly, $$\EE\left[g\left(X^{(2)}, Y^{(1)}\right)\right] \le \EE\left[g\left(X^{(2)}, Y^{(2)}\right)\right].$$
+  Finally, we integrate over $U$ and get the desired result.
+\end{proof}
+
+\begin{lemma}
+  In the algorithm described above, we have
+  $$\alpha_k\le \alpha_{k+1} \quad \text{and} \quad X_k\le_{\text{icx}} X_{k+1}$$
+  for every $k\ge 0$.
+\end{lemma}
+
+\begin{proof}
+  We have $X_0\le_{\text{icx}} X_1$, since for every increasing convex function $\phi$, we have
+  $$\EE[\phi(1)] = \phi(1) = \phi(\EE[X_1]) \le \EE[\phi(X_1)].$$
+
+  Suppose that $X_{k-1}\le_{\text{icx}} X_k$ for some $k\ge 1$. We have
+  $$1 = f\left(X_{k-1}, \alpha_k\right) \le f\left(X_{k}, \alpha_k\right).$$
+  Hence $\alpha_k\le \alpha_{k+1}$ and
+  $$f\left(X_{k}, \alpha_{k+1}\right) \le f\left(X_{k}, \alpha_{k}\right) \le f\left(X_{k}, \alpha_{k+1}\right)$$
+
+
+  We continue to show that $X_k\le_{\text{icx}} X_{k+1}$. For every $i,j,u\ge 0$, define the function
+  $$g_{\alpha}(x,y) = i(u^\alpha x + (1-u)^\alpha y) + j\max(u^\alpha x, (1-u)^\alpha y), \quad x,y\ge 0.$$
+  Then $x\mapsto g_{\alpha}(x,y)$ and $y\mapsto g_{\alpha}(x,y)$ are increasing convex functions as a nonnegative linear combination of convex functions. Using Lemma~\ref{lem:composition} and the same argument as in the proof of Lemma~\ref{lem:f_icx}, we have for every increasing convex function $\phi$,
+\end{proof}

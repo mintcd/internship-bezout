@@ -1,0 +1,8 @@
+\chapter{Average Number of Nodes after Cutting Kleene Stars}
+
+Here we consider the average number of nodes in the resulting regex tree after replacing each Kleene star with a single node. This makes the tree a standard binary tree, though we should better replace the Kleene stars with an empty node. The recurrence is
+\begin{equation}
+  Y_{n+2} \stackrel{d}{=} I\left(Y_{U_n}^{(1)} + Y_{n+1-U_n}^{(2)}\right) + 1, \quad Y_1 = Y_2 = 1.
+\end{equation}
+
+This time $I$ is the indicator of the event that the root is not a Kleene star. The initial conditions are $Y_0 = 0$ and $Y_1 = 1$. We can solve this recurrence using the same method as before, and we find that

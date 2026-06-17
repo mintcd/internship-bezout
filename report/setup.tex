@@ -177,30 +177,16 @@
 \newcommand{\Xc}{\mathscr{X}}
 \newcommand{\Yc}{\mathscr{Y}}
 \newcommand{\Zc}{\mathscr{Z}}
-
-
-% Exercise counters and commands
-\newcounter{exo}
-\newcounter{parti}
-
-\def\exercice%
-{\stepcounter{exo}\noindent{\bf Exercise \arabic{parti}.\arabic{exo}.} \ }%
-{\vspace{0,3cm}}
-
-\def\partie%
-{\stepcounter{parti} \noindent {\bf \arabic{parti}.} --- }%
-{\vspace{0,3cm}}
-
-\def\exercices%
-{\noindent{\bf Exercises.} \ }%
-{\vspace{0,3cm}}
-
-% Additional math commands
 \def\NN{{\mathbb{N}}}
 \def\ZZ{{\mathbb{Z}}}
 \def\QQ{{\mathbb{Q}}}
 \def\RR{{\mathbb{R}}}
 \def\CC{{\mathbb{C}}}
+
+
+% Disable end statements in algorithms
+\algrenewcommand\algorithmicend{}
+
 
 \newcommand{\rank}{\mathrm{rank}}
 \newcommand{\im}{\mathrm{Im}}
