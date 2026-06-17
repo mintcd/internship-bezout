@@ -37,3 +37,8 @@ $$Y'_n= \dfrac{2u+v-1}{u}Y_n + 1$$
 $$Y_{n+1}' \stackrel{d}{=} I^{(n)}\left(Y_{U_n}'^{(1)} + Y_{n-1-U_n}'^{(2)}\right) + J^{(n)}\max\left(Y_{U_n}'^{(1)}, Y_{n-1-U_n}'^{(2)}\right) + u(1-J^{(n)})-I^{(n)}(1-v), \forall n\ge 1, \quad Y'_0=Y'_1=1.$$
 
 $$Y_{n+1}'' \stackrel{d}{=} I^{(n)}\left(Y_{U_n}''^{(1)} + Y_{n-1-U_n}''^{(2)}\right) + J^{(n)}\max\left(Y_{U_n}''^{(1)}, Y_{n-1-U_n}''^{(2)}\right), \forall n\ge 1, \quad Y''_0=Y''_1=1.$$
+
+
+$X \stackrel{d}{=} I\left(U^{\alpha} X^{(1)} + \left(1-U\right)^{\alpha} X^{(2)}\right) + J\max\left(U^{\alpha} X^{(1)}, \left(1-U\right)^{\alpha} X^{(2)}\right), \quad X^{(1)}, X^{(2)} \stackrel{\text{iid}}{\sim} X$.
+
+$I$ and $J$ are independent, mutually exclusive Bernoulli with expectation $u$ and $v$ respectively, such that $u > 1/2$. 
