@@ -1,0 +1,56 @@
+\chapter{Generating Random Regex Trees Uniformly}
+
+\begin{center}
+  May 24, 2026
+  \vspace{0.5cm}
+\end{center}
+
+The goal is to sample recursively, avoid listing all trees. We need to count the number of trees whose root is either $\cdot$, $+$, or $*$ in order to determine the probabilities of choosing each operator at the root. Suppose that all leaves are the same.
+
+\section{Deriving the Recurrences}
+
+Let $t_n$ be the number of regex trees with $n$ leaves that is not a trivial leaf. Let $t_n^+$ and $t_n^*$ be the number of regex trees with $n$ leaves whose root is $+$, and $*$ respectively. Then
+\begin{align}
+   & t_n = 2t_n^+ + t_n^* \text{ for } n\ge 2,                     \\
+   & t_{n}^* = t_{n-1} \text{ for } n\ge 2,                        \\
+   & t_{n}^+ = \sum_{i=1}^{n-2} t_i t_{n-1-i} \text{ for } n\ge 3, \\
+   & t_1^+ = t_1^* = 0, t_2^*=0, t_2^+=1, t_1=1.
+\end{align}
+
+Using generating functions $T_n(z)=\sum_{k=0}^n t_k z^k$ and similarly for $T_n^+$ and $T_n^*$, we have
+\begin{align*}
+   & T^*(x) = xT(x)              \\
+   & T^+(x) = x(T(x))^2          \\
+   & T(x) = x + 2T^+(x) + T^*(x)
+\end{align*}
+
+Solving for $T$, we get
+$$T(x) = x + 2(x(T(x))^2) + (xT(x)).$$
+We choose the root where $T(0)=0$.
+\begin{equation}
+  T(x) = \frac{1 - x - \sqrt{1 - 2x - 7x^2}}{4x}.
+\end{equation}
+Let $\Delta=1 - 2x - 7x^2$. Then $\Delta' = -2 - 14x$. We have
+\begin{align*}
+       & 4xT(x) = 1 - x - \sqrt{\Delta}                                                                      \\
+  \iff & 4T(x) + 4xT'(x) = -1 + \dfrac{\Delta'}{2\sqrt{\Delta}}                                              \\
+  \iff & 4T(x) + 4xT'(x) = -1 + \dfrac{\Delta'\sqrt{\Delta}}{2\Delta}                                        \\
+  \iff & 8\Delta T(x) + 8\Delta xT'(x) = -2\Delta + \Delta'(4xT(x) - 1 + x)                                  \\
+  \iff & x\Delta T'(x) + \left(\Delta - \frac{1}{2}x\Delta'\right) T(x) = \frac{(x - 1)\Delta' - 2\Delta}{8} \\
+  \iff & x(1 - 2x - 7x^2) T'(x) + (1 - x) T(x) = 2x.
+\end{align*}
+Identify the coefficients of $x^n$ with $n\ge 2$ to 0, we get
+\begin{align}
+       & n t_n - 2(n-1) t_{n-1} - 7(n-2) t_{n-2} + t_n - t_{n-1}=0 \notag   \\
+  \iff & (n+1)t_n = (2n - 1)t_{n-1} + 7(n - 2)t_{n-2} \label{eq:recurrence}
+\end{align}
+Given that $t_1 = t_2 = 1$, we can compute $t_n$ in linear time.
+
+\section{Sampling}
+We have
+$$\sum_{i=1}^{n-2} t_i t_{n-1-i}=t_{n}^+=\dfrac{1}{2}(t_{n}-t_{n}^*)=\dfrac{1}{2}(t_{n}-t_{n-1}) \text{ for } n\ge 3.$$
+The probabilities of the root are
+\begin{equation}
+  p_n(\cdot)=\dfrac{t_{n-1}}{t_n} \text{ and } p_n(+)=p_n(\cdot)=\dfrac{t^+_{n}}{t_n}=\dfrac{t_n-t_{n-1}}{2t_n}.
+\end{equation}
+The remaining task is to ensure that the way subtrees are chosen preserves the uniform distribution. We can sample an integer uniformly in $\left\{1,\ldots,\dfrac{1}{2}(t_{n}-t_{n-1})\right\}$, regard each term $t_i t_{n-1-i}$ as a block, and determine which block the integer falls into. An optimized way is to order them as $1,n,2,n-1,\ldots$.

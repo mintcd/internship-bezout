@@ -1,0 +1,46 @@
+\chapter{Appendix}
+
+\begin{lemma}
+  \label{lemma:average_uniform_convergence}
+  Let $U_n$ be a uniform random variable on $\{1, 2, \ldots, n\}$ and let $U$ be a uniform random variable on $[0,1]$. Then $\dfrac{U_n}{n}\xlongrightarrow{d} U$.
+\end{lemma}
+
+\begin{proof}
+  Recall the CDF of $U$
+  $$F_U(x) = \begin{cases}
+      0 & x < 0,         \\
+      x & 0 \le x \le 1, \\
+      1 & x > 1.
+    \end{cases}$$
+  Let $V_n = U_n/n$. We have $F_{V_n}(x) = \PP(U_n/n \le x) = \PP(U_n\le nx)$. Hence
+  \begin{itemize}
+    \item If $x\le 0$, then $F_{V_n}(x) = 0 = F_U(x)$, since $U_n\ge 1$.
+    \item If $x > 1$, then $F_{V_n}(x) = 1 = F_U(x)$, since $U_n\le n$.
+    \item If $0 < x \le 1$, then $F_{V_n}(x) = \dfrac{\lfloor nx \rfloor}{n}$. Since $x - \dfrac{1}{n} \le \dfrac{\lfloor nx \rfloor}{n} \le x$, we have $F_{V_n}(x) \to x = F_U(x)$.
+  \end{itemize}
+\end{proof}
+
+\begin{lemma}
+  \label{lemma:random_index_convergence}
+  Let $(X_n)$ be a sequence of random variables converging in distribution to $X$. Let $(N_n)$ be a integer-valued sequence of random variables independent of $(X_n)$ such that $N_n \xlongrightarrow{d} \infty$. Then $X_{N_n} \xlongrightarrow{d} X$.
+\end{lemma}
+
+\begin{proof}
+  We want to show that $\lim\limits_{n \to \infty} \PP(X_{N_n} \le x) = \PP(X \le x)$ for all $x$ at which $F_X$ is continuous. The CDF of $X_{N_n}$ is
+  $$\PP(X_{N_n} \le x) = \sum_{k=1}^\infty \PP(X_k \le x, N_n = k) = \sum_{k=1}^\infty\PP(N_n = k)\PP(X_k\le k),$$
+  where the last equality holds because $X_k$ and $N_n$ are independent. Let $\epsilon > 0$. Since $X_n \xlongrightarrow{d} X$, there exists $K$ such that for all $k\ge K$, we have
+  $$|\PP(X_k \le x) - \PP(X \le x)| < \dfrac{\epsilon}{2}.$$
+  Since $\sum\limits_{k=1}^\infty\PP(N_n = k) = 1$, we have
+  \begin{align*}
+    \left|\PP(X_{N_n} \le x) - \PP(X \le x)\right|
+     & = \left|\sum_{k=1}^\infty\PP(N_n = k)\left(\PP(X_k\le k) - \PP(X \le x)\right)\right|               \\
+     & \le \sum_{k=1}^\infty\PP(N_n = k)\left|\PP(X_k\le k) - \PP(X \le x)\right|                          \\
+     & \le \sum_{k=1}^{K-1}\PP(N_n = k)\left|\PP(X_k\le k) - \PP(X \le x)\right|                           \\
+     & \,\,\,\, +  \sum_{k=K}^\infty\PP(N_n = k)\left|\PP(X_k\le k) - \PP(X \le x)\right|                  \\
+     & \le \sum_{k=1}^{K-1}\PP(N_n = k) \cdot 1 +  \sum_{k=K}^\infty\PP(N_n = k) \cdot \dfrac{\epsilon}{2} \\
+  \end{align*}
+  Since $N_n \xlongrightarrow{d} \infty$, we have $\PP(N_n \ge K) \to 1$ as $n \to \infty$. Hence, there exists $N$ such that for all $n\ge N$, we have $\PP(N_n \ge K) > 1 - \dfrac{\epsilon}{2}$. Therefore, for all $n\ge N$, we have
+  $$\left|\PP(X_{N_n} \le x) - \PP(X \le x)\right| < \dfrac{\epsilon}{2} + \dfrac{\epsilon}{2}\left(1- \dfrac{\epsilon}{2}\right) \le \epsilon.$$
+
+  Since $\epsilon$ is arbitrary, the result follows.
+\end{proof}

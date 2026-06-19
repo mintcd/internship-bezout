@@ -1,0 +1,87 @@
+\begin{lemma}
+  The sequence $(Z_n)$ defined by Algorithm~\ref{alg:alpha} is tight.
+\end{lemma}
+
+\begin{theorem}[Prokhorov]
+  A sequence of random variables is tight if and only if every of its subsequence contains a further subsequence that converges in distribution.
+\end{theorem}
+
+\begin{theorem}[{\cite[Theorem 2.6]{billingsley1999convergence}}]
+  A sequence of random variables converges in distribution if and only if every of its subsequence has a further subsequence that converges in distribution to the same limit.
+\end{theorem}
+
+With these two theorems, we have to show that if $Z_1 \sim \mu$ and $Z_2 \sim \nu$ are solutions to the fixed-point equation \eqref{eq:fixed-point}, then $\mu = \nu$.
+
+Hence, for every $Z_1\sim \mu$ and $Z_2\sim \nu$, we have
+\begin{align*}
+  d_2^2(\mu, \nu)
+   & \le \EE\left[(Z_1-Z_2)^2\right]                                                                                                                                                                  \\
+   & = u\EE\left[\left(U^{\alpha} \left(Z_1^{(1)}-Z_2^{(1)}\right) + \left(1-U\right)^{\alpha} \left(Z_1^{(2)}-Z_2^{(2)}\right)\right)^2\right]                                                       \\
+   & \,\,\,\, + v\EE\left[\left(\max\left(U^{\alpha} Z_1^{(1)}, \left(1-U\right)^{\alpha} Z_1^{(2)}\right)-\max\left(U^{\alpha} Z_2^{(1)}, \left(1-U\right)^{\alpha} Z_2^{(2)}\right)\right)^2\right] \\
+\end{align*}
+Using $(\max(a,b)-\max(c,d))^2 \le (a-c)^2 + (b-d)^2$ for every $a,b,c,d\in\RR$, we get
+\begin{align*}
+  d_2^2(\mu, \nu)
+   & \le (u+v)\EE\left[\left(U^{\alpha} \left(Z_1^{(1)}-Z_2^{(1)}\right) + \left(1-U\right)^{\alpha} \left(Z_1^{(2)}-Z_2^{(2)}\right)\right)^2\right] \\
+\end{align*}
+Using $\EE[Z_1]=\EE[Z_2]=1$, we get
+\begin{align*}
+  d_2^2(\mu, \nu)
+   & \le (u+v)\EE\left[U^{2\alpha} \left(Z_1^{(1)}-Z_2^{(1)}\right)^2 + \left(1-U\right)^{2\alpha} \left(Z_1^{(2)}-Z_2^{(2)}\right)^2\right] \\
+   & = \dfrac{2(u+v)}{2\alpha+1}\EE\left[(Z_1-Z_2)^2\right]
+\end{align*}
+Taking the infimum over $Z_1\sim \mu$ and $Z_2\sim \nu$, we get
+$$d_2^2(\mu, \nu) \le \dfrac{2(u+v)}{2\alpha+1}d_2^2(\mu, \nu).$$
+
+Since $\dfrac{2(u+v)}{2\alpha+1} < 1$, we have $d_2^2(\mu, \nu) = 0$ and $\mu = \nu$. Therefore, $Z_n\xrightarrow{d} Z$, where $Z \in D_2(1)$ is the solution to the fixed-point equation \eqref{eq:fixed-point} with $\alpha = \alpha$.
+
+Finally, we prove that $X_n\xrightarrow{d} Z$. We follow \cite{neininger2004general} to introduce an accompanying sequence $(Q_n)$ defined by
+\begin{equation}
+  \label{eq:accompanying-sequence}
+  Q_{n+2}
+  \stackrel{d}{=} I\left(A_n Z^{(1)} + B_n Z^{(2)}\right) +  J\max\left(A_n Z^{(1)}, B_n Z^{(2)}\right), n\ge 1, \quad Z_1=1, Z_2=0,
+\end{equation}
+where $A_n$ and $B_n$ are as in \eqref{eq:normalized-recurrence}. Let $X_n\sim \mu_n$ and $Z\sim \mu$. Let $\delta>0$. We have
+$$d_2^2(\mu_{n+2}, \mu) \le \EE\left[(X_{n+2}-Z)^2\right] \le (1+\delta)\EE\left[(X_{n+2}-Q_{n+2})^2\right] + \left(1+\dfrac{1}{\delta}\right)\EE\left[(Q_{n+2}-Z)^2\right]$$
+
+First, we show that $\EE\left[(Q_{n+2}-Z)^2\right] \to 0$. We have
+\begin{align*}
+  \EE\left[(Q_{n+2}-Z)^2\right]
+   & \le (u+v)\EE\left[\left(A_n^{\alpha} - U^{\alpha}\right)^2 + \left(B_n^{\alpha} - \left(1-U\right)^{\alpha}\right)^2\right]\EE[Z^2] \\
+   & \,\,\,\,\, + 2u\EE\left[\left(A_n^{\alpha} - U^{\alpha}\right)\left(B_n^{\alpha} - \left(1-U\right)^{\alpha}\right)\right]\EE[Z]^2  \\
+   & \to 0.
+\end{align*}
+
+Next, we have
+\begin{align*}
+   & \EE\left[(X_{n+2}-Q_{n+2})^2\right]                                                                                                  \\
+   & \le  (u+v)\EE\left[A_n^{2\alpha}\left(X_{U_n}^{(1)}-Z^{(1)}\right)^2 + B_n^{2\alpha}\left(X_{n+1-U_n}^{(2)}-Z^{(2)}\right)^2 \right] \\
+   & + 2u\EE\left[A_n^{\alpha}B_n^{\alpha}\left(X_{U_n}^{(1)}-Z^{(1)}\right)\left(X_{n+1-U_n}^{(2)}-Z^{(2)}\right)\right]                 \\
+\end{align*}
+
+
+\section{Discussion}
+
+\section{Appendix}
+\begin{definition}[{locally convex space, \cite[Appendix 40]{zeidler1986nonlinear}}]
+  \label{def:locally-convex-space}
+  Let $X$ be a vector space over $\KK$ and $\{p_j\}_{j\in J}$ be a family of seminorms on $X$. Then $\left(X, \{p_j\}_{j\in J}\right)$ is called a locally convex space if for $x\in X$,
+  $$x = 0 \iff p_j(x)=0 \text{ for all } j\in J.$$
+\end{definition}
+
+Let $X=C_b(S)$ where $C_b(S)$ is the space of bounded continuous functions on a metric space $S=\RR$. Equip $X$ with the supremum norm
+$$\|f\|_\infty = \sup_{x\in S}|f(x)|.$$
+Then $X$ is Banach. As a consequence of Riesz-Markov-Kakutani representation theorem, every $f\in X$ corresponds to a unique signed Borel measure $\mu$ on $S$ such that
+$$\mu(f) = \int_S f d\mu$$
+is linear and continuous. The signed Borel measures form the dual space $X^*$ of $X$.
+
+We actually focus on $X^*$. The family of seminorms as in Definition~\ref{def:locally-convex-space} is $\{p_f\}_{f\in X}$ defined by
+$$p_f(\mu) = \left|\int_S f(x) d\mu\right|.$$
+
+
+\begin{definition}[Tightness]
+  \label{def:tight}
+  A sequence of probability measures $(\mu_n)$ on $\RR$ is tight if for every $\varepsilon > 0$, there exists $M > 0$ such that $\sup_n \mu_n(\{x: |x| > M\}) < \varepsilon$.
+
+  A sequence of random variables $(Z_n)$ is tight if for every $\varepsilon > 0$, there exists $M > 0$ such that $\sup_n\PP(|Z_n| > M) < \varepsilon$.
+\end{definition}

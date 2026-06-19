@@ -1,0 +1,68 @@
+\chapter{Another Upper Bound on the Yield Recurrence}
+
+\begin{center}
+  May 20, 2026
+  \vspace{0.5cm}
+\end{center}
+
+Let us recall the yield recurrence
+$$Y_{n+1} \stackrel{d}{=} I^{(n)}\left(Y_{U_n}^{(1)} + Y_{n-1-U_n}^{(2)} + 1\right) + J^{(n)}\max\left(Y_{U_n}^{(1)}, Y_{n-1-U_n}^{(2)}\right),\forall n \geq 1, \quad Y_0 = Y_1 = 0.$$
+
+\section{Escaping from the Random Variables}
+
+Let $Z_n = \lambda_n^{Y_n}$ and $z_n = \mathbb{E}[Z_n]$ where $\lambda_n = 1 + 2^{-n}$. For every $I\in \{0,1\}$ and $C\in \mathbb{R}$, we have
+$$C^I = I\cdot C + (1-I).$$
+
+Since $I^{(n)}J^{(n)}=0$, we have
+\begin{align*}
+   & \lambda_{n+1}^{Y_{n+1}}                                                                                                                                                                                 \\
+   & = \left(I^{(n)}\left(\lambda_{n+1}^{Y_{U_n}^{(1)} + Y_{n-1-U_n}^{(2)} + 1}\right) + 1-I^{(n)}\right)\left(J^{(n)}\left(\lambda_{n+1}^{\max(Y_{U_n}^{(1)}, Y_{n-1-U_n}^{(2)})}\right) + 1-J^{(n)}\right) \\
+   & = I^{(n)}\left(\lambda_{n+1}^{Y_{U_n}^{(1)} + Y_{n-1-U_n}^{(2)} + 1}\right) + J^{(n)}\lambda_{n+1}^{\max\left(Y_{U_n}^{(1)}, Y_{n-1-U_n}^{(2)}\right)} + 1 - J^{(n)} - I^{(n)}
+\end{align*}
+
+Taking the expectation, we get
+\begin{align*}
+  z_{n+1}
+   & = \dfrac{u}{n}\sum\limits_{i=1}^n \EE\left[\lambda_{n+1}^{Y_{i}^{(1)} + Y_{n-1-i}^{(2)} + 1}\right] + \dfrac{v}{n}\sum\limits_{i=1}^n \EE\left[\lambda_{n+1}^{\max\left(Y_{i}^{(1)}, Y_{n-1-i}^{(2)}\right)}\right] + 1-u-v                           \\
+   & \le \dfrac{\lambda_{n+1}u}{n}\sum\limits_{i=1}^n \EE\left[\lambda_{n+1}^{Y_{i}^{(1)}}\lambda_{n+1}^{Y_{n-1-i}^{(2)}}\right] + \dfrac{v}{n}\sum\limits_{i=1}^n \EE\left[\lambda_{n+1}^{Y_{i}^{(1)}} + \lambda_{n+1}^{Y_{n-1-i}^{(2)}}-1\right] + 1-u-v \\
+   & = \dfrac{\lambda_{n+1}u}{n}\sum\limits_{i=1}^n \EE\left[\lambda_{n+1}^{Y_{i}}\right]\EE\left[\lambda_{n+1}^{Y_{n-1-i}}\right] + \dfrac{2v}{n}\sum\limits_{i=1}^n \EE\left[\lambda_{n+1}^{Y_{i}} \right] + 1-u-2v                                      \\
+\end{align*}
+Let $\beta_{n+1,i}=\dfrac{\ln(\lambda_{n+1})}{\ln(\lambda_{i})}$ for $0\le i \le n-1$, then $\beta_{n+1,i}<1$. By Jensen's inequality,
+$$\EE[\lambda_{n+1}^{Y_{i}}]=\EE\left[\left(\lambda_{i}^{Y_{i}}\right)^{\beta_{n+1,i}}\right]\le \EE\left[\lambda_{i}^{Y_{i}}\right]^{\beta_{n+1,i}} = z_i^{\beta_{n+1,i}}.$$
+Hence,
+$$z_{n+1} \le \dfrac{\lambda_{n+1}u}{n}\sum\limits_{i=1}^n z_i^{\beta_{n+1,i}}z_{n-1-i}^{\beta_{n+1,n-1-i}} + \dfrac{2v}{n}\sum\limits_{i=1}^n z_i^{\beta_{n+1,i}} + 1-u-2v.$$
+
+
+
+Therefore, let us consider the sequence
+\begin{equation}
+  \label{eq:upper_bound_z}
+  z_{n+1} = \dfrac{\lambda_{n+1}u}{n}\sum\limits_{i=1}^n z_i^{\beta_{n+1,i}}z_{n-1-i}^{\beta_{n+1,n-1-i}} + \dfrac{2v}{n}\sum\limits_{i=1}^n z_i^{\beta_{n+1,i}} + 1-u-2v, \quad z_0=z_1=1.
+\end{equation}
+
+Experiments show that $(z_n)$ grows exponentially, the bound fails. That means, using $\max(x,y) \le x+y$ keeps the sequence sublinear, but using $\lambda^{\max(x,y)} \le \lambda^x + \lambda^y$ pushes it to linear.
+
+
+\section{Using Techniques from Analytic Combinatorics}
+Let $Z(t) = \sum_{n=1}^\infty z_n t^n$ be the generating function for the sequence $\{z_n\}$. Let us analyze each term in \eqref{eq:upper_bound_z} through $Z$.
+\begin{align*}
+   & \sum\limits_{n=1}^\infty nz_{n+2}t^n
+  = t\dfrac{\mathrm{d}}{\mathrm{d}t}\left(\dfrac{Z(t) - z_1t - z_2t^2}{t^2}\right) = t\dfrac{\mathrm{d}}{\mathrm{d}t}\left(\dfrac{Z(t)}{t^2} - \dfrac{1}{t} - 1\right) = \dfrac{Z'(t)}{t} - \dfrac{2Z(t)}{t^2} + \dfrac{1}{t}, \\
+   & \sum\limits_{n=1}^\infty \sum\limits_{i=1}^n z_iz_{n+1-i}t^n
+  = \dfrac{Z(t)^2}{t},                                                                                                                                                                                                         \\
+   & \sum\limits_{n=1}^\infty \sum\limits_{i=1}^n z_it^n = \dfrac{Z(t)}{1-t},                                                                                                                                                  \\
+   & \sum\limits_{n=1}^\infty nt^n = \dfrac{t}{(1-t)^2}.
+\end{align*}
+The function equation is
+$$\dfrac{Z'(t)}{t} - \dfrac{2Z(t)}{t^2} + \dfrac{1}{t} = \lambda u\dfrac{Z(t)^2}{t} + 2v\dfrac{Z(t)}{1-t} + (1-u-v)\dfrac{t}{(1-t)^2}.$$
+Equivalently,
+\begin{equation}
+  Z'(t) = \lambda u Z(t)^2 + \left( \frac{2}{t} + \frac{2v t}{1-t} \right) Z(t) + \frac{(1-u-v) t^2}{(1-t)^2} - 1.
+\end{equation}
+
+Substituting $Z(t) = -\dfrac{1}{\lambda u} \dfrac{W'(t)}{W(t)}$ in the convention of a Riccati equation, we get
+\begin{align*}
+       & -\dfrac{1}{\lambda u}\dfrac{W''(t)W(t)-W'(t)^2}{W(t)^2} = \dfrac{1}{\lambda u} \dfrac{W'(t)^2}{W(t)^2} - \dfrac{1}{\lambda u} \left( \frac{2}{t} + \frac{2v t}{1-t} \right) \dfrac{W'(t)}{W(t)} + \frac{(1-u-v) t^2}{(1-t)^2} - 1 \\
+  \iff & -\dfrac{1}{\lambda u}\dfrac{W''(t)}{W(t)} = - \dfrac{1}{\lambda u} \left( \frac{2}{t} + \frac{2v t}{1-t} \right) \dfrac{W'(t)}{W(t)} + \frac{(1-u-v) t^2}{(1-t)^2} - 1                                                            \\
+  \iff & W''(t) - \left( \frac{2}{t} + \frac{2v t}{1-t} \right) W'(t) + \left(\frac{(1-u-v) t^2}{(1-t)^2} - 1\right)\lambda u W(t) = 0.
+\end{align*}

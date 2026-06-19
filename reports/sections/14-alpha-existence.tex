@@ -1,0 +1,271 @@
+\chapter{Existence of a True Power}
+\begin{center}
+  June 10, 2026
+  \vspace{0.5cm}
+\end{center}
+
+\section{The Recurrence and Fixed-Point Equation}
+
+Let us recall the recurrence for $Y_n$
+$$Y_{n+2} \stackrel{d}{=} I^{(n)}\left(Y_{U_n}^{(1)} + Y_{n+1-U_n}^{(2)}\right) + J^{(n)}\max\left(Y_{U_n}^{(1)}, Y_{n+1-U_n}^{(2)}\right), n\ge 1, \quad Y_1=1, Y_2=0.$$
+
+Because our analysis concerns only the sequence of marginal distributions $\mathcal{L}(Y_n)$, we can use the same random variables $I$, $J$ for each $n$. This reuse does not impact the distributional recurrence, provided that at each step $n$, the inputs $Y_{U_n}^{(1)}$ and $Y_{n+1-U_n}^{(2)}$ are drawn as conditionally independent copies from the current distribution $\mathcal{L}(Y_n)$, independent of $I$, $J$, and $U_n$. So the recurrence can be rewritten as
+\begin{equation}
+  Y_{n+2} \stackrel{d}{=} I\left(Y_{U_n}^{(1)} + Y_{n+1-U_n}^{(2)}\right) + J\max\left(Y_{U_n}^{(1)}, Y_{n+1-U_n}^{(2)}\right), n\ge 1, \quad Y_1=1, Y_2=0.
+\end{equation}
+
+For the same reason, we set $U_n = \lceil nU \rceil$ for every $n$, where $U$ is uniformly distributed on $[0,1]$. Let $X_n = Y_n/n^{\alpha}$, for some $\alpha \in (0,1]$. We have the recurrence for $X_n$ as follows
+\begin{equation}
+  \label{eq:normalized-recurrence}
+  X_{n+2}
+  \stackrel{d}{=} I\left(A_n^{\alpha} X_{U_n}^{(1)} + B_n^{\alpha} X_{n+1-U_n}^{(2)}\right) +  J\max\left(A_n^{\alpha} X_{U_n}^{(1)}, B_n^{\alpha} X_{n+1-U_n}^{(2)}\right), n\ge 1, \quad X_1=1, X_2=0,
+\end{equation}
+where
+$$A_n = \dfrac{U_n}{n+2} \text{ and } B_n =\dfrac{n+1-U_n}{n+2}.$$
+
+Suppose that $(X_n)$ converges, then limiting distribution $Z$ of $Y_n/n^{\alpha}$ satisfies the following fixed-point equation
+\begin{equation}
+  \label{eq:fixed-point}
+  Z \stackrel{d}{=} I\left(U^{\alpha} Z^{(1)} + \left(1-U\right)^{\alpha} Z^{(2)}\right) + J\max\left(U^{\alpha} Z^{(1)}, \left(1-U\right)^{\alpha} Z^{(2)}\right), \quad Z^{(1)}, Z^{(2)} \stackrel{\text{iid}}{\sim} Z.
+\end{equation}
+
+We aim to find solutions $(Z,\alpha)$ to \ref{eq:fixed-point} such that $\L(Z) \neq \delta_0$. Let us work with the space $\D_2(1)$ of distributions over $\RR_+$ with mean 1 and finite second moment. Recall the $p$-Wasserstein metric $d_p$ on $\D_2(1)$ for $p\in [1,2]$
+
+$$d_p(\mu, \nu) = \inf\left\{\EE\left[(X-Y)^p\right]^{1/p}: X\sim \mu, Y\sim \nu\right\}.$$
+That means for every $X\sim \mu$ and $Y\sim \nu$, we have $d_p(\mu, \nu) \le \EE\left[(X-Y)^p\right]^{1/p}.$
+
+We give some properties of the fixed-point equation \ref{eq:fixed-point}. Define the operator $T_\alpha:\D_2(1)\to \D_2(1)$ according to the right-hand side of \ref{eq:fixed-point} as
+\begin{equation}
+  T_\alpha(\mu) = \L\left(I\left(U^\alpha Z^{(1)} + \left(1-U\right)^\alpha Z^{(2)}\right) + J\max\left(U^\alpha Z^{(1)}, \left(1-U\right)^\alpha Z^{(2)}\right)\right),\,\,\, Z^{(1)}, Z^{(2)} \stackrel{\text{iid}}{\sim} \mu.
+\end{equation}
+
+\begin{lemma}
+  \label{lem:collapse-one-step}
+  For every $\mu,\nu\in \D_2(1)$ and $\alpha\in(0,1]$, we have
+  $$d_2(T_\alpha(\mu), T_\alpha(\nu)) \le \sqrt{\dfrac{2(u+v)}{2\alpha+1}}d_2(\mu, \nu) \text{ and } d_1(T_\alpha(\mu), T_\alpha(\nu)) \le \dfrac{2(u+v)}{\alpha+1}d_1(\mu, \nu).$$
+\end{lemma}
+
+\begin{proof}
+  Since $I$ and $J$ are Bernoulli, we have $I^2 = I$ and $J^2 = J$. Also, from $I+J\le 1$, we have $IJ = 0$. Therefore, for every $X,X^{(1)},X^{(2)}\stackrel{\text{iid}}{\sim}\mu$ and $Y,Y^{(1)},Y^{(2)}\stackrel{\text{iid}}{\sim}\nu$, we have
+  \begin{align*}
+    d_2^2(T_\alpha(\mu), T_\alpha(\nu))
+     & \le \EE\left[I\left(\left(U^\alpha\left(X^{(1)}-Y^{(1)}\right) + \left(1-U\right)^\alpha\left(X^{(2)}-Y^{(2)}\right)\right)\right)^2\right]                                                      \\
+     & \,\,\,\,\,+\EE \left[J\left.\left(\max\left(U^\alpha X^{(1)}, \left(1-U\right)^\alpha X^{(2)}\right) - \max\left(U^\alpha Y^{(1)}, \left(1-U\right)^\alpha Y^{(2)}\right)\right)\right)^2\right] \\
+     & := A+B.
+  \end{align*}
+  For the first expectation $A$, we use $\EE[X] = \EE[Y] = 1$ and get
+  \begin{align*}
+    A
+     & = u\EE\left[U^{2\alpha}\left(X^{(1)}-Y^{(1)}\right)^2 + (1-U)^{2\alpha}\left(X^{(2)}-Y^{(2)}\right)^2 \right] \\
+     & = \dfrac{2u}{2\alpha+1}\EE[(X-Y)^2].
+  \end{align*}
+  For the second one, $B$, we use the inequality
+  $$(\max(a,b) - \max(c,d))^2 \le \max(a-c, b-d)^2 \le (a-c)^2+(b-d)^2$$
+  for real numbers $a,b,c,d$ and get
+  \begin{align*}
+    B
+     & \le v\EE\left[U^{2\alpha}\left(X^{(1)}-Y^{(1)}\right)^2 + (1-U)^{2\alpha}\left(X^{(2)}-Y^{(2)}\right)^2 \right] \\
+     & = \dfrac{2v}{2\alpha+1}\EE[(X-Y)^2].
+  \end{align*}
+  Therefore,
+  $$d_2^2(T_\alpha(\mu), T_\alpha(\nu)) \le \dfrac{2(u+v)}{2\alpha+1}\EE[(X-Y)^2].$$
+  Taking the expectation over $X\sim\mu$ and $Y\sim\nu$, we get the desired result. The case for $d_1$ is similar.
+\end{proof}
+
+For $\mu\in \D_2(1)$ and $\alpha\in(0,1]$, define
+\begin{equation}
+  \label{eq:f}
+  f(\mu, \alpha) = \EE_{Y\sim T_\alpha(\mu)}[Y]=\dfrac{2u}{\alpha+1} + v\EE_{Z^{(1)}, Z^{(2)} \stackrel{\text{iid}}{\sim} \mu}\left[\max\left(U^\alpha Z^{(1)}, \left(1-U\right)^\alpha Z^{(2)}\right)\right]
+\end{equation}
+
+\begin{lemma}
+  \label{prop:f}
+  For every $\mu\in \D_2(1)$, there exists a unique $\alpha\in(0,1]$ such that $f(\mu, \alpha) = 1$.
+\end{lemma}
+
+\begin{proof}
+  It is clear that $f$ is strictly decreasing in $\alpha$. Next, we show that $f$ is continuous. The first term is continuous. We show that the second term is Lipschitz continuous. Let $\alpha, \alpha' \in (0,1]$ and assume without loss of generality that $\alpha > \alpha'$. We have
+  \begin{align*}
+     & \EE\left[\max\left(U^\alpha X^{(1)}, (1-U)^\alpha X^{(2)}\right) - \max\left(U^{\alpha'} X^{(1)}, (1-U)^{\alpha'} X^{(2)}\right)\right] \\
+     & \le \EE\left[\max\left(\left|U^\alpha - U^{\alpha'}\right|X^{(1)}, \left|(1-U)^\alpha - (1-U)^{\alpha'}\right|X^{(2)}\right)\right]     \\
+     & \le \EE\left[\left|U^\alpha - U^{\alpha'}\right|\right] + \EE\left[\left|(1-U)^\alpha - (1-U)^{\alpha'}\right|\right]                   \\
+     & = 2\EE\left[\left|U^\alpha - U^{\alpha'}\right|\right]
+     & \text{($U \stackrel{d}{=} 1-U$)}                                                                                                        \\
+     & = 2\EE\left[U^{\alpha'} - U^{\alpha}\right]
+     & \text{($U^\alpha\ge U^{\alpha'}, a.s.$)}                                                                                                \\
+     & = \dfrac{2}{\alpha'+1} - \dfrac{2}{\alpha+1} = \dfrac{2(\alpha-\alpha')}{(\alpha+1)(\alpha'+1)}                                         \\
+     & \le 2(\alpha-\alpha').
+  \end{align*}
+
+  Finally, we evaluate $f$ at the endpoints.
+  $$\lim_{\alpha \to 0+} f(\mu, \alpha) = 2u+v\EE\left[\max\left(X^{(1)}, X^{(2)}\right)\right] > 2u+v > 1,$$
+  $$f(1) = u + v\EE\left[\max\left(U^\alpha X^{(1)}, (1-U)^\alpha X^{(2)}\right)\right] \le u+v \le 1.$$
+\end{proof}
+
+Consider $\alpha: \D_2(1) \to (0,1]$ as a function that maps a distribution $\mu$ to the unique $\alpha$ such that $f(\mu, \alpha) = 1$. By Lemma~\ref{prop:f}, this function is well-defined. That motivates an algorithm to find $\alpha^\star$ and the limiting distribution $\mu^\star$ of $X_n$ as follows.
+
+\begin{algorithm}[H]
+  \caption{}
+  \label{alg:alpha}
+  \begin{algorithmic}[1]
+    \State Initialize $Z_1 = 1$ and $\alpha_1$ solves $\alpha + v2^{-\alpha} = 2(u+v)-1$.
+    \For{$k=1,2,\ldots$}
+    \State Compute $Z_{n+1} = T_{\alpha_n}\left(\L\left(Z_n\right)\right)$.
+    \State Find $\alpha_{n+1}$ such that $\EE[Z_{n+1}] = 1$ i.e. $f(\L(Z_{n+1}), \alpha_{n+1}) = 1$.
+    \EndFor
+  \end{algorithmic}
+\end{algorithm}
+
+Using $\max(a,b)^2 \le a^2 + b^2$, we bound the second moments as follows
+\begin{align*}
+  Z_{n+1}^2
+   & \le I\left(U^{2\alpha_n} \left(Z_{n}^{(1)}\right)^2 + \left(1-U\right)^{2\alpha_n} \left(Z_{n}^{(2)}\right)^2+ 2\left(U(1-U)\right)^{\alpha_n} Z_{n}^{(1)}Z_{n}^{(2)}\right)    \\
+   & \,\,\,\,\, + J\left(U^{2\alpha_n} \left(Z_{n}^{(1)}\right)^2 + \left(1-U\right)^{2\alpha_n} \left(Z_{n}^{(2)}\right)^2\right)                                                   \\
+   & = (I+J)\left(U^{2\alpha_n} \left(Z_{n}^{(1)}\right)^2 + \left(1-U\right)^{2\alpha_n} \left(Z_{n}^{(2)}\right)^2\right)+2I \left(U(1-U)\right)^{\alpha_n} Z_{n}^{(1)}Z_{n}^{(2)} \\
+\end{align*}
+Taking the expectation, we get
+$$\EE\left[Z_{n+1}^2\right] \le \dfrac{2(u+v)}{2\alpha_n+1}\EE\left[Z_{n}^2\right] + 2uB(\alpha_n+1, \alpha_n+1),$$
+
+where $B$ is the beta function. The function $\alpha \mapsto B(\alpha+1, \alpha+1)$ is bounded on $(0,1]$. In particular, we have $B(\alpha+1, \alpha+1) \in [1/6,1)$. For $\sup_n \mathbb{E}[Z_n^2] < \infty$, at least we need some $k$ such that
+$$\dfrac{2(u+v)}{2\alpha_k+1} < 1 \iff \alpha_k > u+v - \dfrac{1}{2}$$
+We may choose to impose $\alpha_1 > u+v - \dfrac{1}{2}$ and use $\alpha_1 > 2u+v-1$ to derive the condition $u\ge \dfrac{1}{2}$.
+
+
+\section{Existence of a Fixed Point}
+Let us define the operator $\Phi: \D_2(1) \to \D_2(1)$ as
+\begin{equation}
+  \label{def:phi}
+  \Phi(\mu) = T_{\alpha(\mu)}(\mu).
+\end{equation}
+
+Let $\D_2(1, M)$ be the subset of $\D_2(1)$ with second moment bounded by $M$
+$$\D_2(1, M) = \left\{\mu \in \D_2(1): \int_0^\infty x^2\mathrm{d}\mu \le M\right\}.$$
+
+\begin{lemma}
+  There exists a real number $M$ such that the operator $\Phi$ defined in \ref{def:phi} maps $\D_2(1, M)$ into itself.
+\end{lemma}
+\begin{proof}
+  Let $\mu\in\D_2(1)$ have finite second moment. Let $Z\sim \mu$. Follow the steps in the previous section, we have
+  \begin{align*}
+    \EE\left[\Phi(Z)^2\right]
+     & \le \dfrac{2(u+v)}{2\alpha+1}\EE\left[Z^2\right] + 2uB(\alpha+1, \alpha+1) \\
+     & < \dfrac{2(u+v)}{2(2u+v)-1}\EE\left[Z^2\right] + 2uB(2u+v, 2u+v)           \\
+  \end{align*}
+  Choosing
+  $$M = B(2u+v, 2u+v)\dfrac{2u(2u-1)}{2(2u+v)-1} \text{ and } \EE[Z^2] \le M,$$
+  we have $\EE\left[\Phi(Z)^2\right] \le M$. Hence, $\Phi$ maps $\D_2(1, M)$ into itself.
+\end{proof}
+
+We attempt to use the Tychonoff fixed-point theorem (See the Discussion section for why Banach or Schauder fixed-point theorems do not apply here).
+
+
+\begin{theorem}[{Tychonoff \cite[Cor. 9.6]{zeidler1986nonlinear}}]
+  Let $\C$ be a nonempty, compact, convex subset of a locally convex space $\M$. Let $f: \C \to \C$ be a continuous mapping. Then $f$ has a fixed point.
+\end{theorem}
+
+The host space $\M$ is the space of signed Borel measures on $\mathbb{R}$, equipped with the topology of weak convergence. Details of $\M$ being locally convex are provided in the Appendix.
+
+
+Then $\Phi: \D_2(1, M) \to \D_2(1, M)$.
+
+\begin{lemma}
+  \label{lem:subset-compactness}
+  The subset $\D_2(1, M)$ of $\M$ is nonempty, compact, and convex.
+\end{lemma}
+\begin{proof}
+  The set $\D_2(1, M)$ is nonempty since it contains $\delta_1$. For convexity, let $\mu, \nu \in \D_2(1, M)$. Then for every $\lambda \in [0,1]$, we have
+  \begin{align*}
+    \int_0^\infty x d(\lambda \mu + (1-\lambda)\nu)
+     & = \lambda \int_0^\infty x d\mu + (1-\lambda) \int_0^\infty x d\nu = 1,       \\
+    \int_0^\infty x^2 d(\lambda \mu + (1-\lambda)\nu)
+     & = \lambda \int_0^\infty x^2 d\mu + (1-\lambda) \int_0^\infty x^2 d\nu \le M.
+  \end{align*}
+
+  For compactness, we need to show that $\D_2(1, M)$ is tight (cf. Definition \ref{def:tight}) and closed. For tightness, we use Markov's inequality. For any $\mu \in \D_2(1, M)$ and any $R > 0$
+
+  \begin{equation}
+    \label{ineq:markov}
+    \mu(\{x \ge R\}) \le \dfrac{1}{R^2}\int_{0}^\infty x^2 \,\mathrm{d}\mu \le \dfrac{M}{R^2}.
+  \end{equation}
+
+  For closedness, let $(\mu_n)$ be a sequence in $\D_2(1, M)$ that converges weakly to $\mu$. We show that $\mu \in \D_2(1, M)$. The boundedness of the second moment follows from a generalized Fatou's lemma \cite[Theorem 1.1]{feinberg2014fatou}
+  $$\int_0^\infty x^2 \,\mathrm{d}\mu \le \liminf_{n \to \infty} \int_0^\infty x^2 \,\mathrm{d}\mu_n \le M.$$
+
+  The function $x\mapsto x$ is uniformly integrable with respect to $\D_2(1, M)$ as follows. For any $\mu \in \D_2(1, M)$ and any $R > 0$
+  $$\int_{R}^\infty x \,\mathrm{d}\mu \le \int_{R}^\infty x \left(\frac{x}{R} \right) \mathrm{d}\mu = \frac{1}{R} \int_{R}^\infty x^2 \,\mathrm{d}\mu \le \frac{1}{R} \int_{0}^\infty x^2 \,\mathrm{d}\mu \le \frac{M}{R}.$$
+  which tends to 0 as $R \to \infty$. Therefore, the first moment converges \cite[Theorem 3.5]{billingsley1999convergence}
+  $$\int_0^\infty x \,\mathrm{d}\mu_n \to \int_0^\infty x \,\mathrm{d}\mu.$$
+\end{proof}
+
+\begin{remark}
+  Since $x\mapsto x$ is uniformly integrable with respect to $\D_2(1, M)$, weak convergence in $\D_2(1, M)$ is equivalent to convergence in $d_1$ \cite[Theorem 6.9]{villani2009optimal}.
+\end{remark}
+
+\begin{lemma}
+  \label{lem:continuity}
+  The operator $\Phi$ defined in \ref{def:phi} is continuous on $\D_2(1, M)$ with respect to the weak topology.
+\end{lemma}
+
+\begin{proof}
+  Let $(\mu_n)$ be a sequence in $\D_2(1, M)$ that converges weakly to $\mu$, which is equivalent to that $d_1(\mu_n, \mu) \to 0$. To show that $\Phi(\mu_n)\stackrel{w}{\longrightarrow}\Phi(\mu)$, we will show that $d_1(\Phi(\mu_n), \Phi(\mu)) \to 0$ by showing that $\Phi$ is Lipschitz with respect to $d_1$. Let $\mu, \nu \in \D_2(1, M)$. Shorten $\alpha_1 := \alpha(\mu)$ and $\alpha_2 := \alpha(\nu)$. Without loss of generality, assume that $\alpha_1 > \alpha_2$. We have
+  \begin{align*}
+    d_1(\Phi(\mu), \Phi(\nu))
+     & = d_1(T_{\alpha_1}(\mu), T_{\alpha_2}(\nu))                                                \\
+     & \le d_1(T_{\alpha_2}(\mu), T_{\alpha_2}(\nu)) + d_1(T_{\alpha_1}(\mu), T_{\alpha_2}(\mu)).
+  \end{align*}
+  By Lemma~\ref{lem:collapse-one-step}, we have
+  $$d_1(T_{\alpha_2}(\mu), T_{\alpha_2}(\nu)) \le \dfrac{2(u+v)}{\alpha_2+1}d_1(\mu, \nu) \le 2(u+v) d_1(\mu, \nu).$$
+  For the second distance, we let $Y^{(1)},Y^{(2)} \sim \nu$.  Then, following the same steps as in Lemma~\ref{prop:f}, we have
+  \begin{align*}
+    d_1(T_{\alpha_1}(\mu), T_{\alpha_2}(\mu))
+     & \le 2(u+v)(\alpha_1 - \alpha_2).
+  \end{align*}
+  We have $f(\mu, \alpha_1) = f(\nu, \alpha_2) = 1$. Hence
+  $$|f(\mu, \alpha_1) - f(\mu, \alpha_2)| = |f(\mu, \alpha_2) - f(\nu, \alpha_2)|.$$
+  Consider the left-hand side term where we fix the distribution $\mu$. We rewrite $f$ as
+  $$f(\mu, \alpha) = \dfrac{2u}{\alpha+1} + v\EE\left[U^\alpha Z^{(1)}\bm{1}_{A} + (1-U)^\alpha Z^{(2)}\bm{1}_{A^c}\right], \quad Z^{(1)}, Z^{(2)} \stackrel{\text{iid}}{\sim} \mu,$$
+  where $A$ is the event that $U^\alpha Z^{(1)} \ge (1-U)^\alpha Z^{(2)}$. Since $\PP\left(U^\alpha Z^{(1)} = (1-U)^\alpha Z^{(2)}\right) = 0$, we have
+  \begin{align*}
+    \dfrac{\partial}{\partial \alpha} f(\mu, \alpha)
+     & = -\dfrac{2u}{(\alpha+1)^2} + v\EE\left[\ln(U) U^\alpha Z^{(1)} \mathbf{1}_A + \ln(1-U) (1-U)^\alpha Z^{(2)} \mathbf{1}_{A^c}\right].
+  \end{align*}
+  Since $\ln(U) < 0$ and $\ln(1-U) < 0$, we have for every $\alpha\in(0,1]$,
+  $$\left|\dfrac{\partial}{\partial \alpha} f(\mu, \alpha)\right| \ge \dfrac{2u}{(\alpha+1)^2}.$$
+  By Mean Value Theorem, we have
+  $$|f(\mu, \alpha_1) - f(\mu, \alpha_2)| \ge \dfrac{2u}{(\alpha_1+1)^2}|\alpha_1 - \alpha_2|\ge \dfrac{u}{2}|\alpha_1 - \alpha_2|$$
+  We also have
+  $$|f(\mu, \alpha_2) - f(\nu, \alpha_2)| \le \dfrac{2v}{\alpha_2+1}d_1(\mu, \nu) \le 2v d_1(\mu, \nu).$$
+  Thus,
+  $$d_1(\Phi(\mu), \Phi(\nu)) \le 2(u+v)\left(1+\dfrac{4v}{u}\right)d_1(\mu, \nu).$$
+\end{proof}
+
+\begin{theorem}
+  The operator $\Phi$ defined in \ref{def:phi} has a fixed point in $\D_2(1, M)$. That is, there exists a pair $\alpha^*\in (0,1]$ and $\mu^\star\in D_2(1,M)$ satisfying \eqref{eq:fixed-point} with $Z\sim\mu^\star$.
+\end{theorem}
+
+\begin{proof}
+  The theorem follows from Tychonoff's fixed-point theorem, Lemma~\ref{lem:subset-compactness}, and Lemma~\ref{lem:continuity}.
+\end{proof}
+
+\section{Uniqueness of the Fixed Point}
+
+For uniqueness, the intuition is as follows. Algorithm~\ref{alg:alpha} only converges if we adjust $\alpha_n$ at each step to ensure that the mean of $\int x\,\mathrm{d}\mu_n = 1$. We started from the most concentrated distribution $\mu_1 = \delta_1$ and increased $\alpha_n$ to fight against the variance of $\delta_n$. Hence, if we fix $\alpha^\star$, then the sequence $(\mu_n)$ will converge to $\delta_0$. Otherwise, if we fix $\alpha = \alpha^\star - \epsilon$, then the sequence will diverge to $\infty$.
+
+If a single $\alpha^\star$ gives two distributions $\mu_1^\star$ and $\mu_2^\star$ that are fixed points of $T_{\alpha^\star}$, then from Lemma~\ref{lem:collapse-one-step}, we have
+$$d_2(\mu_1^\star, \mu_2^\star) \le \sqrt{\dfrac{2(u+v)}{2\alpha+1}}d_2(\mu_1^\star, \mu_2^\star).$$
+Hence $\mu_1^\star = \mu_2^\star$.
+
+\begin{lemma}
+  Let $(\alpha^\star, \mu^\star)$ be a solution to \eqref{eq:fixed-point}. Then $T^n_{\alpha^\star}(\delta_1) \stackrel{d}{\to} \delta_0$.
+\end{lemma}
+
+\section{Convergence of the Algorithm}
+
+
+% We will prove in Algorithm~\ref{alg:alpha} converges to a unique $\alpha_n\to\alpha^\star$ and $Z_n \xrightarrow{d} Z$, where $Z$ is the unique solution to \eqref{eq:fixed-point} with $\alpha = \alpha^\star$.
+
+
+% Now we focus on the convergence of $(Z_n)$. Let us introduce the notion of tightness tailored to our setting.
+
+
+

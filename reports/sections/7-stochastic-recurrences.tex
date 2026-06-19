@@ -1,0 +1,81 @@
+\chapter{Asymptotic Analysis of Stochastic Recurrences}
+\begin{center}
+  May 11, 2026
+  \vspace{0.5cm}
+\end{center}
+
+
+We apply the contraction method for simpler cases of our yield recurrence.
+
+\section{Recurrence with Sum Only}
+
+\begin{proposition}
+  Consider the recurrence
+  \begin{equation}
+    Y_{n+2} = Y^{(1)}_{U_n} + Y^{(2)}_{n+1-U_n} + 1, n \ge 2, \quad Y_1 = Y_2 = 0.
+  \end{equation}
+  Given that $U_n$ is uniformly distributed on $\{1, 2, \ldots, n\}$, and the superscripts are for independent copies. We have $y_n = E[Y_n] \sim Cn$ for some constant $C > 0$. Moreover, $\dfrac{Y_n}{n}\xlongrightarrow{d} C$.
+\end{proposition}
+
+\begin{remark}
+  One can obtain the constant $C$ using generating functions.
+\end{remark}
+
+\begin{proof}
+  Let $X_n = \dfrac{Y_n}{Cn}$ for $n \ge 1$. We have
+  \begin{equation}
+    X_{n+2} = \dfrac{U_n}{n+2} X^{(1)}_{U_n} + \dfrac{n+1-U_n}{n+2} X^{(2)}_{n+1-U_n} + \dfrac{1}{Cn}.
+  \end{equation}
+
+  We will prove that $X_n\xlongrightarrow{d} 1$. Let $Z_n = X_n - 1$. We have
+  $$Z_{n+2} = \dfrac{U_n}{n+2} Z^{(1)}_{U_n} + \dfrac{n+1-U_n}{n+2} Z^{(2)}_{n+1-U_n} + b_n,$$
+
+  where $b_n = \dfrac{1}{Cn} - \dfrac{3}{n+2} = \Theta\left(\dfrac{1}{n}\right)$. The limiting equation is
+  \begin{equation}
+    X \stackrel{d}{=} U X^{(1)} + (1-U) X^{(2)}.
+  \end{equation}
+
+  \begin{lemma}
+    The unique solution in $\M(0)$ to the above equation is $X \stackrel{d}{=} 0$.
+  \end{lemma}
+
+  Now we prove that $\zeta_2(X_n, X) \to 0$. Introduce an accompanying sequence $(Q_n)_{n \ge 1}$ defined by
+  \begin{equation}
+    Q_{n+2} = \dfrac{U_n}{n+2}X^{(1)} + \dfrac{n+1-U_n}{n+2}X^{(2)} + b_n.
+  \end{equation}
+
+  We have
+  $$\zeta_2(X_{n+2}, X) \le \zeta_2(X_{n+2}, Q_{n+2}) + \zeta_2(Q_{n+2}, X).$$
+
+  The fact that $\zeta_2(Q_{n+2}, X) \to 0$ is straightforward. For the first term, we have
+  \begin{align*}
+     & \zeta_2(X_{n+2}, Q_{n+2})                                                                                                                                                                                \\
+     & \le \sum_{j=1}^{n} P(U_n = j) \left[ \zeta_2\left( \frac{j}{n+2}X^{(1)}_j, \frac{j}{n+2}X^{(1)} \right) + \zeta_2\left( \frac{n+1-j}{n+2}X^{(2)}_{n+1-j}, \frac{n+1-j}{n+2}X^{(2)} \right) \right] + b_n \\
+     & = \frac{1}{n} \sum_{j=1}^{n} \left[ \left(\frac{j}{n}\right)^2 \zeta_2(X_j, X) + \left(\frac{n-1-j}{n}\right)^2 \zeta_2(X_{n-1-j}, X) \right] + b_n                                                      \\
+     & = \frac{2}{n^3} \sum_{j=1}^{n} j^2 \zeta_2(X_j, X)      + b_n
+  \end{align*}
+
+  Therefore,
+  $$\zeta_2(X_{n+2}, X) \le \left(\frac{2}{n^3} \sum_{j=1}^{n} j^2\right) \sup\limits_{1 \le j \le n} \zeta_2(X_j, X) + q_n,$$
+  where $q_n = \zeta_2(Q_{n+2}, X) + b_n \to 0$.
+
+  \begin{lemma}
+    Consider a nonnegative sequence $(x_n)$ whose $x_0, x_1$ are given, satisfying the recurrence
+    \begin{equation}
+      x_{n+2} \le p_n\sup\limits_{1 \le j \le n} x_j + q_n, n \ge 2,
+    \end{equation}
+    where $0\le p_n \le p < 1, \forall n \ge 2$ and $q_n$ is bounded. Then $(x_n)$ is bounded.
+  \end{lemma}
+
+  % \begin{proof}
+  %   The proof is by induction. Let $\sup |q_n| \le Q$. The induction hypothesis is
+  %   $$\sup\limits_{0 \le j \le n}x_j \le \max\left(x_0, \dfrac{Q}{1-p}\right).$$
+  % \end{proof}
+
+  We have $\left(\dfrac{2}{n^3} \sum_{j=1}^{n} j^2\right) < \dfrac{2}{3}$ for all $n$. By the lemma, the sequence $(\zeta_2(X_n, X))$ is bounded. Let $\eta = \limsup\zeta_2(X_n, X)$. Let $\epsilon > 0$. There exists $N$ such that for all $n \ge N$, $\zeta_2(X_n, X) < \eta + \epsilon$. Hence for all $n \ge N$,
+  \begin{align*}
+    \zeta_2(X_{n+2}, X) & \le \frac{2}{n^3} \sum_{j=1}^{N-1} j^2 \zeta_2(X_j, X) + \left(\frac{2}{n^3} \sum_{j=N}^{n} j^2\right) (\eta + \epsilon) + q_n.
+  \end{align*}
+  Take the limit superior on both sides, we have
+  $$\eta \le \frac{2}{3}(\eta + \epsilon).$$ Since $\epsilon$ is arbitrary, we have $\eta = 0$. Therefore, $X_n \xrightarrow{d} 0$.
+\end{proof}

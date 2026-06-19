@@ -1,0 +1,223 @@
+\chapter{Asymptotic Analysis of Some Sequences}\label{chap:sequences}
+\begin{center}
+  April 28, 2026
+  \vspace{0.5cm}
+\end{center}
+
+In this section, we analyze the asymptotic behavior of lower bounds of $\EE[Y_n]$, as follows.
+\begin{equation}
+  \label{eq:recurrence-sum}
+  x_{n+2} = \dfrac{a}{n}\sum_{i=1}^{n}x_i + b, \quad n \ge 1, \quad x_1=x_2=0.
+\end{equation}
+\begin{equation}
+  \label{eq:recurrence-diff}
+  \begin{aligned}
+    x_{n+2} = \dfrac{a}{n}\sum_{i=1}^{n}x_i + \dfrac{b}{n}\sum_{i=1}^{n}|x_i - x_{n+1-i}| + c, \quad n \ge 1, \quad x_1=x_2=0, \\
+    \text{where } a>1, 0 < b < 1 \text{ and } c>0.
+  \end{aligned}
+\end{equation}
+\begin{equation}
+  \label{eq:recurrence-sum-half-sum}
+  \begin{aligned}
+    x_{n} = \dfrac{2u}{n}\sum_{i=0}^{n-1}x_i + \dfrac{2v}{n}\sum_{i=\lfloor (n-1)/2 \rfloor}^{n-1}x_{i}, \quad n \ge 2, \quad  x_0=x_1=1, \\
+    \text{where } u,v > 0 \text{ and } u+v\le1 < 2u+v.
+  \end{aligned}
+\end{equation}
+
+\begin{note}
+  I shifted the index wrongly in recurrence \eqref{eq:recurrence-sum-half-sum} in the previous version. The correct version is as below. Due to experiments, the asymptotic behavior of the two are the same, but maybe the induction proofs differ.
+\end{note}
+
+\begin{equation}
+  \label{eq:recurrence-sum-half-sum-corrected}
+  \begin{aligned}
+    x_{n+2} = \dfrac{2u}{n}\sum_{i=1}^{n}x_i + \dfrac{2v}{n}\sum_{i=\lfloor (n+1)/2 \rfloor}^{n}x_{i}, \quad n \ge 2, \quad  x_1=x_2=1, \\
+    \text{where } u,v > 0 \text{ and } u+v\le1 < 2u+v.
+  \end{aligned}
+\end{equation}
+
+Recurrence \eqref{eq:recurrence-sum-half-sum-corrected} is in turn a lower bound of the following, when we ignore the mid term in the sum of maxima.
+\begin{equation}
+  \label{eq:recurrence-sum-max}
+  \begin{aligned}
+    x_{n+2} = \dfrac{2u}{n}\sum_{i=1}^{n}x_i + \dfrac{v}{n}\sum_{i=1}^{n} \max(x_{i}, x_{n+1-i}), \quad n \ge 2, \quad  x_1=x_2=1, \\
+    \text{where } u,v > 0 \text{ and } u+v\le1 < 2u+v.
+  \end{aligned}
+\end{equation}
+
+We can only lower-bound \eqref{eq:recurrence-sum-max} by \eqref{eq:recurrence-sum-half-sum-corrected} if we can show that the sequence define by \eqref{eq:recurrence-sum-max} is increasing.
+
+\begin{proposition}
+  Consider recurrence \eqref{eq:recurrence-sum}. We have
+  \begin{itemize}
+    \item If $a<1$, then $x_n \sim \dfrac{b}{1-a}$.
+    \item If $a=1$, then $x_n \sim b\ln n$.
+    \item If $a>1$, then $x_n \sim \dfrac{b}{(a-1)\Gamma(a)} n^{a-1}$.
+  \end{itemize}
+\end{proposition}
+
+\begin{proof}
+  Consider the generating function $X(z) = \sum_{n=1}^{\infty} x_n z^n$ with the convention that $x_0=0$. We rewrite the recurrence as
+  $$(n+2)x_{n+2} - 2x_{n+2} = a\sum_{i=1}^{n}x_i + bn.$$
+  We multiply both sides by $z^{n+2}$ and sum over $n \ge 1$. The left-hand side becomes
+  \begin{align*}
+    \sum_{n=1}^{\infty}((n+2)x_{n+2} - 2x_{n+2})z^{n+2}
+     & = \sum_{n=3}^{\infty}n x_{n}z^{n} - 2\sum_{n=3}^{\infty}x_{n}z^{n}     \\
+     & = z \sum_{n=1}^{\infty}n x_{n}z^{n-1} - 2\sum_{n=1}^{\infty}x_{n}z^{n} \\
+     & = z X'(z) - 2X(z).
+  \end{align*}
+  The right-hand side becomes
+  \begin{align*}
+    \sum_{n=1}^{\infty}(a\sum_{i=1}^{n}x_i + bn)z^{n+2}
+     & = az^2\sum_{n=1}^{\infty}\sum_{i=1}^{n}x_i z^{n} + bz^2\sum_{n=1}^{\infty}nz^{n} \\
+     & = az^2 \dfrac{X(z)}{1-z} + \dfrac{bz^3}{(1-z)^2}.
+  \end{align*}
+
+  Therefore, the generating function $X(z)$ satisfies the following ODE
+  $$X'(z) - \left(\dfrac{2}{z} + \dfrac{az}{1-z}\right)X(z) = \dfrac{bz^3}{(1-z)^2}.$$
+
+  We have $\mu(z) = \exp\left( \int -\left( \frac{2}{z} + \frac{a}{1-z} - a \right) \,\mathrm{d}z \right) = z^{-2} (1-z)^a$. which gives
+  $$z^{-2} (1-z)^a X(z) = \int b (1-z)^{a-2} \,\mathrm{d}z.$$
+
+  There are two cases of $a$ that determine the integral. If $a=1$, we have
+  $$z^{-2} (1-z) X(z) = b\ln\left(\dfrac{1}{1-z}\right) + C.$$
+  Since $x_1=x_2=0$, we have $z^{-2}X(z)\to 0$ as $z\to 0$, which gives $C=0$. Therefore, we have
+  $$X(z) = b \dfrac{z^2}{1-z} \ln\left(\dfrac{1}{1-z}\right).$$
+  Hence, $x_n = bH_{n-2} \sim b\ln n$.
+
+  If $a \neq 1$, we have
+  $$z^{-2} (1-z)^a X(z) = -\dfrac{b}{a-1} (1-z)^{a-1} + C.$$
+  Using the same argument as above, we have $C= \dfrac{b}{a-1}$. Therefore, we have
+  $$X(z) = \dfrac{b}{a-1}z^2 \left((1-z)^{-a}-(1-z)^{-1}\right).$$
+  Using the generalized binomial theorem $$(1-z)^{-a} = \sum_{n=0}^{\infty} \binom{n+r-1}{n} z^n,$$ we have
+  $$x_n = \dfrac{b}{a-1}\left(\binom{n-3+a}{n-2} - 1\right) \sim \dfrac{b}{a-1}\left(\dfrac{n^{a-1}}{\Gamma(a)}-1\right).$$
+
+  If $a<1$ then $x_n \sim \dfrac{b}{1-a}$. If $a>1$, then $x_n  \sim \dfrac{b}{(a-1)\Gamma(a)} n^{a-1}$.
+\end{proof}
+
+\begin{lemma}
+  The sequence $(x_n)$ in \eqref{eq:recurrence-diff} is increasing.
+\end{lemma}
+
+\begin{proof}
+  One checks that $x_n\ge 0$ for all $n$. Let us prove that $(x_n)$ is increasing. We have $x_2\ge x_1$. Assume that $x_n\ge x_{n-1} \ge \ldots \ge x_0$ for some $n\ge 3$. Then,
+  \begin{align*}
+    n x_{n+2} & = a\sum_{i=1}^{n}x_i + b\sum_{i=1}^{n}|x_i - x_{n+1-i}| + nc                   \\
+              & = a\sum_{i=1}^{n}x_i + b\sum_{i=1}^{\lfloor n/2\rfloor} (x_{n+1-i} - x_i) + nc \\
+              & = a\sum_{i=1}^{n}x_i + b\sum_{i=1}^{\lfloor n/2\rfloor} (x_{n+1-i} - x_i) + nc \\
+              & = a\sum_{i=1}^{n}x_i + b\sum_{i=1}^{\lfloor n/2\rfloor} (x_{n+1-i} - x_i) + nc \\
+              & = a\sum_{i=1}^{n}x_i + b\sum_{i=1}^{\lfloor n/2\rfloor} (x_{n+1-i} - x_i) + nc \\
+              & = (a+b)\sum_{i=1}^{n}x_i - 2b\sum_{i=1}^{\lfloor n/2\rfloor} x_i - bm_n + nc,
+  \end{align*}
+
+  where
+  $$m_n =
+    \begin{cases} x_{\lfloor n/2\rfloor+1} & \text{if } n \text{ is odd}, \\ 0 & \text{if } n \text{ is even}.
+    \end{cases}$$
+
+  Let $S_n = \sum_{i=1}^n x_i$. Then,
+  \begin{align*}
+    nx_{n+2} & = (a+b)S_n - 2b S_{\lfloor n/2\rfloor}  -bm_n + nc, \\
+    S_{n+1}  & = S_n + x_{n+1}.
+  \end{align*}
+
+  Hence,
+  $$nx_{n+2} - (n-1)x_{n+1} = (a+b)x_n - 2b(S_{\lfloor n/2\rfloor} - S_{\lfloor (n-1)/2\rfloor}) - b(m_n - m_{n-1}) + c.$$
+
+  Let us check the right-hand side according to the parity of $n$.
+
+  \begin{itemize}
+    \item If $n=2k$, then $S_{\lfloor n/2\rfloor} - S_{\lfloor (n-1)/2\rfloor} = x_k$ and $m_n - m_{n-1} = -x_{k}$. The right-hand side is $(a+b)x_n - 2bx_k + c$.
+    \item If $n=2k+1$, then $S_{\lfloor n/2\rfloor} - S_{\lfloor (n-1)/2\rfloor} = 0$ and $m_n - m_{n-1} = x_{k+1}$. The right-hand side is $(a+b)x_n - 2bx_{k+1} + c$.
+  \end{itemize}
+
+  Collecting the two cases, we have
+  \begin{align*}
+    nx_{n+2} - (n-1)x_{n+1} = (a+b)x_n - 2b x_{\lceil n/2\rceil} + c.
+  \end{align*}
+  The proof follows from Proposition \ref{prop:recurrence-ceil}.
+\end{proof}
+
+\begin{lemma}
+  The sequence in \eqref{eq:recurrence-diff} can be rewritten as
+  \begin{equation}
+    nx_{n+2} - (n-1)x_{n+1} = (a+b)x_n - 2b x_{\lceil n/2\rceil} + c.
+  \end{equation}
+\end{lemma}
+
+\begin{proposition}
+  Consider the sequence defined by \eqref{eq:recurrence-sum-half-sum}. We have $x_n = \Theta(n^{\alpha})$, where $\alpha$ is the unique solution to
+  $$2(u+v) - v2^{-\alpha} = \alpha+1.$$
+\end{proposition}
+
+\begin{proof}
+  For the lower bound, assume the inductive hypothesis $x_n \ge K(n^{\alpha}+1)$ with $K\le \dfrac{1}{2}$ to be determined. The base cases $n=0,1$ hold. Let us check for $n=2$.
+  \begin{align*}
+    x_2 = 2u + 2v = \alpha+1+v2^{-\alpha} \ge \alpha+1 \ge \dfrac{1}{2}(2^{\alpha}+1), \forall \alpha \in [0,1].
+  \end{align*}
+
+  For $n\ge 3$, we have
+  \begin{align*}
+    \dfrac{x_{n}}{K}
+     & \ge \dfrac{2u}{n}\sum_{i=0}^{n-1}(i^{\alpha}+1) + \dfrac{2v}{n}\sum_{i=\lfloor (n-1)/2 \rfloor}^{n-1}(i^{\alpha}+1)                                                                       \\
+     & \ge \dfrac{2u}{n}\left(\left(\int_{0}^{n-1}x^{\alpha}\,\mathrm{d}x\right)+n\right)  + \dfrac{2v}{n}\int_{(n-3)/2}^{n-1}(x^{\alpha}+1) \,\mathrm{d}x                                       \\
+     & = \dfrac{2u}{n}\left(\left(\int_{0}^{n-1}x^{\alpha}\,\mathrm{d}x\right)+n\right)  + \dfrac{2v}{n}\left(\int_{(n-3)/2}^{n-1}x^{\alpha} \,\mathrm{d}x +\dfrac{n+1}{2}\right)                \\
+     & = \dfrac{2u}{n}\left(\dfrac{(n-1)^{\alpha+1}}{\alpha+1} \right) + \dfrac{2v}{n}\left(\dfrac{(n-1)^{\alpha+1} - ((n-3)/2)^{\alpha+1}}{\alpha+1}\right) + 2u + v\left(1+\dfrac{1}{n}\right) \\
+     & \ge \dfrac{(n-1)^{\alpha+1}}{n(\alpha+1)}\left(2u+2v - v\left(\dfrac{n-3}{n}\right)^{\alpha+1}2^{-\alpha}\right)+ 2u + v                                                                  \\
+     & \ge n^{\alpha}\left(1-\dfrac{1}{n}\right)^{\alpha+1} + 2u+v
+  \end{align*}
+
+  We are done if we can prove that for every $n\ge 3$,
+  $$n^{\alpha}\left(1-\dfrac{1}{n}\right)^{\alpha+1} + 2u+v \ge n^\alpha + 1.$$
+  By Bernoulli's inequality, we have $\left(1-\dfrac{1}{n}\right)^{\alpha+1} \ge 1 - \dfrac{\alpha+1}{n}$. Hence, it suffices to show that
+
+  $$n^{\alpha}\left(1-\dfrac{\alpha+1}{n}\right) + 2u+v \ge n^\alpha + 1 \iff 2u + v - 1 \ge \dfrac{\alpha+1}{n^{1-\alpha}}.$$
+
+  Let $N_0 = \left\lceil \left(\dfrac{\alpha+1}{2u + v - 1}\right)^{\frac{1}{1-\alpha}} \right\rceil$. The inequality holds for every $n\ge N_0$. Now we choose $K$ for it to hold for $n < N_0$. In particular,
+  $$K = \min\left(\dfrac{1}{2}, \min\limits_{3\le i < N_0}\dfrac{x_i}{i^{\alpha} + 1}\right) > 0.$$
+
+  The lower bound follows.
+
+  % For the upper bound, assume the inductive hypothesis $x_n \le K(n^{\alpha}-L)$. We have
+  % \begin{align*}
+  %   \dfrac{x_{n}}{K}
+  %    & \le \dfrac{2u}{n}\sum_{i=0}^{n-1}(i^{\alpha}-L) + \dfrac{2v}{n}\sum_{i=\lfloor (n-1)/2 \rfloor}^{n-1}(i^{\alpha}-L)                                                  \\
+  %    & \le \dfrac{2u}{n}\int_{0}^{n}\left(x^{\alpha}-L\right)\,\mathrm{d}x  + \dfrac{2v}{n}\int_{(n-2)/2}^{n}\left(x^{\alpha}-L \right)\,\mathrm{d}x                        \\
+  %    & = \dfrac{2u}{n}\left(\dfrac{n^{\alpha+1}}{\alpha+1} - Ln\right)  + \dfrac{2v}{n}\left(\dfrac{n^{\alpha+1} - ((n-2)/2)^{\alpha+1}}{\alpha+1} - L\dfrac{n+1}{2}\right) \\
+  %    & = \dfrac{n^{\alpha}}{\alpha+1}\left(2u+2v - \left(\dfrac{n-2}{n}\right)^{\alpha+1}v2^{-\alpha}\right) - L\left(2u + \left(\dfrac{n+1}{n}\right)v\right)              \\
+  %    & \le \dfrac{n^{\alpha}}{\alpha+1}\left(2u+2v - \left(\dfrac{n-2}{n}\right)^{\alpha+1}v2^{-\alpha}\right) - \dfrac{Lv}{3} - L                                          \\
+  % \end{align*}
+
+  % We are done if we can prove that
+  % \begin{align*}
+  %        & \dfrac{n^{\alpha}}{\alpha+1}\left(2u+2v - \left(\dfrac{n-2}{n}\right)^{\alpha+1}v2^{-\alpha}\right) - \dfrac{Lv}{3} \le n^\alpha            \\
+  %   \iff & n^{\alpha}\left(1 + \left(1-\left(\dfrac{n-2}{n}\right)^{\alpha+1}\right)\dfrac{v2^{-\alpha}}{\alpha+1}\right) - n^\alpha \le \dfrac{Lv}{3} \\
+  %   \iff & \dfrac{v2^{-\alpha}}{\alpha+1} \left(n^{\alpha}-\dfrac{(n-2)^{\alpha+1}}{n}\right) \le \dfrac{Lv}{3}
+  % \end{align*}
+
+
+  % Equivalently,
+  % $$.$$
+\end{proof}
+
+\begin{proposition}
+  Consider the sequence defined by \eqref{eq:recurrence-sum-half-sum-corrected}. We have $x_n = \Theta(n^{\alpha})$, where $\alpha$ is the unique solution of
+  $$2(u+v) - v2^{-\alpha} = \alpha+1.$$
+\end{proposition}
+
+\begin{proof}
+  The hypothesis for the lower bound is $x_n \ge K(n^\alpha + L)$, where $K,L$ will be chosen to satisfy the base cases, which are
+  $$K(L+1) \le 1 \quad \text{and} \quad \alpha+1 \ge K(3^\alpha + L).$$
+
+  Similar to the proof of the previous proposition, we have to show that for every $n\ge 3$,
+  $$n^{\alpha} + L(2u+v) \ge (n+2)^\alpha + L \iff (n+2)^\alpha - n^\alpha \le L(2u+v-1).$$
+  With $x > 0$ and $\alpha\in [0,1]$, the function $x\mapsto (x+2)^\alpha - x^\alpha$ is non-increasing. Hence, it suffices to show that
+  $$3^\alpha - 1 \le L(2u+v-1).$$
+
+  Now we choose
+  $$L=\dfrac{2}{2u+v-1} \text{ and } K=\dfrac{2u+v-1}{2u+v+1}.$$ Note that the optimal choice is $L=\dfrac{1}{K}-1$. We have $K\le \dfrac{1}{2}$. We have to show that the smaller $K$ is, the easier it is to satisfy the base cases. One checks that
+  $$\alpha+1 \ge \dfrac{1}{2}(3^\alpha + 1)$$
+  and
+  $$f(x) = \dfrac{1}{x}(3^\alpha + x-1) = 1 + \dfrac{3^\alpha - 1}{x}$$
+  is decreasing when $x\ge 2$.
+\end{proof}
