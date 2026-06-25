@@ -1,0 +1,82 @@
+\begin{titlepage}
+  \begin{tikzpicture}[remember picture, overlay]
+    \pgfmathsetmacro{\yoffset}{1.25}
+    \pgfmathsetmacro{\height}{0.8}
+    \pgfmathsetmacro{\prevX}{0}
+
+    \foreach \i in {0,...,6} {
+        \pgfmathtruncatemacro{\level}{round(90*\i/6)}
+        \pgfmathsetmacro{\xstart}{\prevX}
+
+        % Inverse the width logic: wider for lighter (low \level), narrower for darker
+        \pgfmathsetmacro{\w}{0.3 + 0.1*(6 - \i)}
+        \pgfmathsetmacro{\xend}{\xstart + \w}
+
+        \fill[gustave!\level!white]
+        ($(current page.south east)+(-\xstart cm,\yoffset cm)$) --
+        ($(current page.south east)+(-\xstart cm,\yoffset cm+\height cm)$) --
+        ($(current page.south east)+(-\xend cm,\yoffset cm+\height cm)$) --
+        ($(current page.south east)+(-\xend cm,\yoffset cm)$) --
+        cycle;
+
+        \global\let\prevX\xend
+      }
+  \end{tikzpicture}
+
+  \begin{center}
+    \begin{figure}
+      \begin{subfigure}[c]{0.4\linewidth}
+        \centering
+        \includegraphics[width=0.8\linewidth]{logo-gustave-eiffel.png}
+      \end{subfigure}
+      \hfill
+      \begin{subfigure}[c]{0.4\linewidth}
+        \centering
+        \includegraphics[width=0.8\linewidth]{logo-ligm.png}
+      \end{subfigure}
+    \end{figure}
+
+    \vspace{1cm}
+
+    \Large
+    Gustave Eiffel University\\
+    \vspace{0.5cm}
+
+    \large
+    \textbf{Internship Report}\\
+    Master 2 Bézout
+
+    \vspace{1.5cm}
+
+    % Divider before the title
+    \noindent\rule{\textwidth}{0.4pt}
+    \vspace{0.5cm}
+
+    \huge{\textbf{Fine-Grained Analysis of Hyperscan Engine}
+    }
+
+    \vspace{0.5cm}
+    % Divider after the title
+    \noindent\rule{\textwidth}{0.4pt}
+
+    \vfill
+    \Large
+    CHAU Dang Minh
+
+    \vfill
+
+    \large
+    \begin{tabular}{lll}
+      \textbf{Supervisors:}
+       & Prof. Cyril NICAUD & (LIGM) \\
+       & Dr. Pablo ROTONDO  & (LIGM)
+    \end{tabular}
+
+
+    \vfill
+
+    \large
+    Paris, July 2026
+
+  \end{center}
+\end{titlepage}

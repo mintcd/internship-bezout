@@ -1,0 +1,123 @@
+\ProvidesPackage{styles}
+
+\RequirePackage{amsthm}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{10pt}
+
+\DeclareFieldFormat{labelnumber}{\textcolor{gustave}{#1}}
+
+\makeatletter
+\renewcommand{\sectionmark}[1]{%
+  \markright{\textbf{\thesection\quad #1}}%
+}
+\makeatother
+\pagestyle{fancy}
+\fancyhead{}
+\fancyhead[LO,LE]{\rightmark}  % Changed from \leftmark to \rightmark
+\fancyfoot{}
+\fancyfoot[CO,CE]{\thepage}
+\renewcommand{\headrulewidth}{0.2pt}
+\renewcommand{\footrulewidth}{0.2pt}
+\setlength{\headheight}{14.5pt}
+
+%%% NAMES %%%
+\renewcommand{\figurename}{Figure}
+\renewcommand{\tablename}{Table}
+\renewcommand{\contentsname}{Contents}
+\renewcommand{\listfigurename}{List of Figures}
+\renewcommand{\listtablename}{List of Tables}
+
+\newcommand{\minxrightarrow}[2][0.75cm]{%
+  \mathrel{\mathop{\hbox to #1{\rightarrowfill}}\limits^{\,\,#2\,\,}}%
+}
+
+% \setlist[itemize,1]{label=\textcolor{gustave}{\textbullet}}
+
+\titleformat{\chapter}[display]
+{\normalfont\bfseries}
+{\hfill\color{gustave}\scalebox{8}{\sffamily\thechapter}}
+{0pt}
+{\flushright\Huge}
+
+% Control vertical spacing
+\titlespacing*{\chapter}{0pt}{2.5cm}{0.5cm}
+
+
+%%%%% ENVIRONMENTS %%%%%%%%%%%
+\newenvironment{solution}{%
+  \renewcommand{\qedsymbol}{$\blacksquare$}% Change the QED symbol to black square
+  \proof[Solution]% Start proof environment with "Solution" instead of "Proof"
+}{%
+  \endproof% End proof environment
+}
+
+\newtheoremstyle{mytheoremstyle}
+  {10pt} % Space above
+  {10pt} % Space below
+  {\itshape} % Font style of the body
+  {} % Indent amount
+  {\bfseries} % Theorem head font style (bold)
+  {} % Punctuation after theorem head
+  {.5em} % Space after theorem head
+  {\textbf{\thmname{#1}\thmnumber{ #2}\thmnote{ (#3)}}} % Theorem head spec (bold name and brackets)
+
+\theoremstyle{mytheoremstyle}
+
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+
+
+\newtheoremstyle{remarkstyle}
+  {10pt}   % Space above
+  {10pt}   % Space below
+  {}          % Body font
+  {}          % Indent amount
+  {\bfseries} % Theorem head font
+  {.}         % Punctuation after theorem head
+  {.5em}      % Space after theorem head
+  {}          % Theorem head spec (can be left empty, meaning `normal`)
+
+\theoremstyle{remarkstyle}
+\newtheorem{definition}{Definition}[chapter]
+\newtheorem{remark}[definition]{Remark}
+
+
+\newtheoremstyle{examplestyle}
+  {10pt}{10pt}{}
+  {}{\bfseries}{.}{.5em}{}
+\theoremstyle{examplestyle}
+\newtheorem{example}[definition]{Example}
+
+\newcommand{\redsquare}{\tikz\fill[gustave] (0,0) rectangle (0.2,0.2);}
+\AtEndEnvironment{example}{\hfill\redsquare}
+\AtEndEnvironment{definition}{\hfill\redsquare}
+
+  
+\renewcommand\thechapter{\arabic{chapter}}
+\renewcommand\thesection{\thechapter.\arabic{section}}
+
+%%%%%%%%%%%%%%%%%%%% NAMES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\renewcommand{\chaptername}{Chapter}
+\renewcommand{\figurename}{Figure}
+\renewcommand{\tablename}{Table}
+\renewcommand{\contentsname}{Contents}
+\renewcommand{\listfigurename}{List of Figures}
+\renewcommand{\listtablename}{List of Tables}
+\newcommand{\farbar}{\,\,|\,\,}
+
+
+%%%%%%%%%%%%%%%%%%%%% NUMBERING %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\counterwithin{theorem}{chapter}
+\renewcommand{\thetheorem}{\thechapter.\arabic{theorem}}
+
+\counterwithin{figure}{chapter}
+\renewcommand{\thefigure}{\arabic{chapter}.\arabic{figure}}
+
+\counterwithin{equation}{chapter}
+\renewcommand{\theequation}{\arabic{chapter}.\arabic{equation}}
+
+\counterwithin{table}{chapter}
+\renewcommand{\thetable}{\arabic{chapter}.\arabic{table}}

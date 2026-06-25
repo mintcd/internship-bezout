@@ -1,0 +1,69 @@
+\documentclass[a4paper,twoside]{report}
+\usepackage[utf8]{inputenc}
+\usepackage{amsthm}
+
+\usepackage[
+    asymmetric,
+    a4paper,
+    left=3cm,
+    right=2cm,
+    top=2.75cm,
+    bottom=3cm,
+    footskip=1.5cm,
+    twoside]{geometry}
+
+\usepackage{bm}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage[colorlinks=true, linkcolor=black, citecolor=gustave, urlcolor=gustave]{hyperref}
+\usepackage{textcomp} %this is for symbols such as copyright etc
+\usepackage{url} %for adding urls obvs so they appear always in one line without breaks
+\usepackage{longtable} %allows you to make tables of two or more pages
+
+\usepackage{amsfonts}
+\usepackage{mathrsfs} %maths fonts, might not need
+\usepackage{array} %extends array and tabular environments
+\usepackage{multirow} 
+\usepackage{bigstrut}
+\usepackage{amssymb} %adding arrows tbh for chemistry you can just use chemmacros \begin{reaction} environment
+\usepackage{amsmath} %for writing maths
+\usepackage{extpfeil}
+\usepackage{adjustbox}%supplement to graphics package
+\usepackage{graphicx}
+\usepackage{lscape} %allows to add certain pages in landscape
+\usepackage[nottoc]{tocbibind} %this adds bibliography to your ToC
+\usepackage{siunitx} %you can declare the units you want as necessary read documentation
+\usepackage{enumitem}
+\usepackage{scalerel}
+\usepackage{tabularx}
+
+\usepackage{tikz}
+\usetikzlibrary{calc, positioning, arrows.meta, shapes.geometric, fit, backgrounds}
+
+\usepackage[backend=biber,style=numeric]{biblatex}
+\addbibresource{refs.bib}
+
+\usepackage{commands}
+\usepackage{styles}
+
+
+\begin{document}
+\sloppy
+% \include{update}
+
+\include{title}
+\include{chapters/acknowledgement}
+\renewcommand*\contentsname{Contents}
+\tableofcontents
+\listoffigures
+\include{chapters/introduction}
+\include{chapters/hyperscan-problems}
+\include{chapters/longest-literals}
+% \include{chapters/techniques}
+\include{chapters/appendix}
+\include{chapters/bib}
+
+\end{document}

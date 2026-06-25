@@ -1,0 +1,20 @@
+\appendix
+\chapter[Appendix]{Appendix}
+
+\section{The Shift-Or algorithm}
+The Shift-Or algorithm leverages bit manipulation. Let $\A$ be the alphabet, $T$ be the text, and $P$ be the pattern. Suppose that we have registers of length $w$ bits. This requires that $|P| \leq w$. As usual, we index characters in the pattern $P$ and $T$ from left to right, starting from $0$. But for the registers, it is convenient to index bits from right to left (LSB), starting from $0$. 
+
+In the compile stage, we construct masks for each character in the alphabet, which we denote by a function $M: \A \to \{0,1\}^w$. For each character $c \in \A$, we have
+\begin{align*}
+    P[i] = c \iff M[c][i] = 0, & \quad i\in[0, |P|-1] \\ 
+    M[c][i] = 1, & \quad i\in[|P|, w-1]
+\end{align*}
+The execution stage is as follows. We initialize a state register $S$ to all 1s (represented as $\sim\!\! 0$). At each step $i \geq 0$, the state register is updated according to the following formula
+\begin{equation}
+    S \gets (S \ll 1) \mid M[T[i]].
+\end{equation}
+At step $i$, if $S[|P|-1] = 0$, then there is a match ending at position $i$ in the text. Correctness is proved by using induction to check the invariant: at step $i$, for all $j \in [0, |P|-1]$, we have
+$$S[j] = 0 \iff T[i-j, i] = P[0, j].$$
+
+
+\section{BST-like distributions of regular expression trees}

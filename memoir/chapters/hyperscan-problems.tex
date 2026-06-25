@@ -1,0 +1,239 @@
+\chapter[An Overview of the Hyperscan Engine]{An Overview of the \\ Hyperscan Engine}
+
+The regular expression matching engine Hyperscan \cite{wang2019hyperscan} was primarily developed by the startup company Sensory Networks in 2008, and was later acquired and open-sourced by Intel in 2013. Closed source in 2023 at version 5.4, it is forked into Vectorscan \cite{vectorscan} by VectorCamp to support more architectures like ARM. Since Vectorscan is still being actively maintained publicly, analyzing its core Hyperscan functionality still provides valuable insights into the design and optimization of high-performance regular expression matching engines, interesting to both academia and industry.
+
+Hyperscan is designed to match a set of regular expressions against a stream of data, with its primary use case being deep packet inspection. The engine leverages SIMD (Single Instruction, Multiple Data) features supported by modern CPUs, which uses longer registers to process multiple similar operations in one instruction. Architecturally, it operates in two distinct phases: the compilation phase and the execution phase. It supports two modes of operation: block mode and stream mode. In block mode, the engine processes a single block of data at a time, while in stream mode, it maintains state across multiple blocks, allowing for continuous matching over a data stream. We focus on the block mode.
+
+
+% Our analysis for the compile phase focuses on its decomposition-based optimization. In the execution phase, we examine its multi-string matchers.
+
+% Block and stream mode
+
+\section{Compilation}
+
+An overview of the compilation process is illustrated in Figure \ref{fig:hs_compile_graph}. The compilation phase provides central APIs, such as the \href{https://github.com/intel/hyperscan/blob/master/src/hs_compile.h#L360}{\texttt{hs\_compile}} function. The function accepts a set of regular expressions. A facade object of class \href{https://github.com/intel/hyperscan/blob/master/src/nfagraph/ng.h#L63}{\texttt{NG}} is initialized, which consumes a compile context of type \href{https://github.com/intel/hyperscan/blob/master/src/util/compile_context.h#L43}{\texttt{CompileContext}}. Through the function \href{https://github.com/intel/hyperscan/blob/master/src/compiler/compiler.h#L116}{\texttt{addExpression}}, each expression is converted into a Glushkov NFA \cite{glushkov1961abstract} (through \href{https://github.com/intel/hyperscan/blob/master/src/compiler/compiler.h#L151}{\texttt{buildGraph}}) and added to the facade (through \href{https://github.com/intel/hyperscan/blob/master/src/nfagraph/ng.h#L71}{\texttt{NG.addGraph}}).
+
+In \texttt{NG.addGraph}, the NFA is firstly decomposed base on its language through \href{https://github.com/intel/hyperscan/blob/master/src/nfagraph/ng_calc_components.h#L47}{\texttt{calcComponents}}. If its language is $L$, it may be split into NFAs whose languages are $L_1, L_2, \ldots, L_n$ such that 
+$$L = L_1 \cup L_2 \cup \ldots \cup L_n.$$ 
+The components are added one by one through \href{https://github.com/intel/hyperscan/blob/master/src/nfagraph/ng.cpp#L205}{\texttt{addComponent}}, which then passed to the Violet subengine through the \href{https://github.com/intel/hyperscan/blob/master/src/nfagraph/ng_violet.h#L49}{\texttt{doViolet}} function, which in turn calls \href{https://github.com/intel/hyperscan/blob/master/src/nfagraph/ng_violet.cpp#L2989}{\texttt{doInitialVioletTransform}} and \href{https://github.com/intel/hyperscan/blob/master/src/rose/rose_build_impl.h#L507}{\texttt{RoseBuild.addRose}}.
+
+In \texttt{doInitialVioletTransform}, the graph analyses described in the Hyperscan paper---namely dominant path, dominant region, and network flow analysis---are performed. These analyses decompose the NFA into literals and sub-FAs, yielding a dependency graph that dictates the matching order. At this phase (\href{https://github.com/intel/hyperscan/blob/master/src/rose/rose_in_graph.h#L189}{\texttt{RoseInGraph}}), each literal is a vertex and each sub-FA acts as an edge. This graph is then passed to the Rose subengine for deduplication of FAs, compilation into bytecode, and execution orchestration. Notably, in the subsequent (\href{https://github.com/intel/hyperscan/blob/master/src/rose/rose_graph.h#L222}{\texttt{RoseGraph}}) representation, the sub-FAs are instead attached directly to their associated literal vertices via \texttt{left} or \texttt{suffix} properties. Multiple FAs may be merged to an FA with multiple initial states. Therefore, the \texttt{suffix} property also contains a sub-property \texttt{top} for which initial state to be chosen.
+
+  
+\begin{figure}[ht]
+  \centering
+  \begin{tikzpicture}[
+    % Define node styles
+    function/.style={rectangle, draw, rounded corners, minimum height=2.5em, minimum width=3.5cm, text centered, font=\ttfamily},
+    object/.style={rectangle, draw, fill=gray!10, minimum height=2.5em, minimum width=3.5cm, text centered, font=\sffamily},
+    legend_box/.style={rectangle, draw, minimum height=1em, minimum width=1.5cm},
+    % Define edge styles
+    direct-call/.style={->, >=Stealth, thick},
+    indirect-call/.style={->, >=Stealth, dashed, thick},
+    linear-order/.style={draw, -{Triangle[open]}, thick},
+    relation/.style={->, >=Stealth, draw=gray!80}
+    ]
+
+    % --- Nodes ---
+    \node[function] (hs_compile) {hs\_compile};
+
+    % Core compiler functions
+    \node[function, below=1cm of hs_compile] (addExpression) {addExpression};
+
+    % Sub-functions branching from addExpression
+    \node[function, below left=1cm and -1cm of addExpression] (buildGraph) {buildGraph};
+    \node[function, below right=1cm and -1cm of addExpression] (addGraph) {NG.addGraph};
+
+    % Component optimization functions
+    \node[function, below left=1cm and -1cm of addGraph] (calcComponents) {calcComponents};
+    \node[function, below right=1cm and -1cm of addGraph] (addComponent) {addComponent};
+
+    \node[function, below=1cm of addComponent] (doViolet) {doViolet};
+    \node[function, below left=1cm and -0.5cm of doViolet] (doInitialVioletTransform) {doInitialVioletTransform};
+    \node[function, below right=1cm and -0.5cm of doViolet] (addRose) {Rose.addRose};
+
+    \node[function, below left=1cm and -1cm of doInitialVioletTransform] (findDominators) {findDominators};
+    \node[function, below right=1cm and -1cm of doInitialVioletTransform] (doNetflowCut) {doNetflowCut};
+
+    % Execution flow
+    \draw[indirect-call] (hs_compile) -- (addExpression);
+
+    \draw[direct-call] (addExpression) -- (buildGraph);
+    \draw[direct-call] (addExpression) -- (addGraph);
+
+    % Linear order: buildGraph happens before adding to facade
+    \draw[linear-order] (buildGraph) -- (addGraph);
+
+    % Graph optimizations
+    \draw[direct-call] (addGraph) -- (calcComponents);
+    \draw[indirect-call] (addGraph) -- (addComponent);
+    \draw[linear-order] (calcComponents) -- (addComponent);
+
+    \draw[direct-call] (addComponent) -- (doViolet);
+    \draw[direct-call] (doViolet) -- (doInitialVioletTransform);
+    \draw[direct-call] (doViolet) -- (addRose);
+    \draw[linear-order] (doInitialVioletTransform) -- (addRose);
+
+    \draw[indirect-call] (doInitialVioletTransform) -- (findDominators);
+    \draw[indirect-call] (doInitialVioletTransform) -- (doNetflowCut);
+
+
+    % --- Legend ---
+    \begin{scope}[shift={(6, 0)}]
+      \draw[direct-call] (0,0) -- (1,0) node[right, font=\footnotesize] {Direct Call};
+      \draw[indirect-call] (0,-0.5) -- (1,-0.5) node[right, font=\footnotesize] {Indirect Call};
+      \draw[linear-order] (0,-1.0) -- (1,-1.0) node[right, font=\footnotesize] {Linear Order};
+      % \draw[relation] (0,-1.5) -- (1,-1.5) node[right, font=\footnotesize] {Object Relation};
+    \end{scope}
+
+  \end{tikzpicture}
+  \caption{Dependency graph of main functions in the compilation phase.}
+  \label{fig:hs_compile_graph}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}[b]{0.48\textwidth}
+    \centering
+    \begin{tikzpicture}[>=Stealth, node distance=2.5cm,
+        round/.style={circle, draw, minimum size=1.2cm, font=\ttfamily},
+        terminal/.style={circle, draw, double, double distance=2pt, minimum size=1.2cm, font=\ttfamily}]
+
+      % Nodes
+      \node[round] (abc) {abc};
+      \node[terminal, right=of abc] (xyz) {xyz};
+
+      % Edge representing the sub-FA
+      \path[->, thick] (abc) edge node[above, font=\small\ttfamily] {[0-9]+} (xyz);
+    \end{tikzpicture}
+    \caption{\texttt{RoseInGraph} (Sub-FA as Edge)}
+    \label{fig:rose_in_graph}
+  \end{subfigure}
+  \hfill
+  % Right Subfigure: RoseGraph
+  \begin{subfigure}[b]{0.48\textwidth}
+    \centering
+    \begin{tikzpicture}[>=Stealth, node distance=2.5cm,
+        round/.style={circle, draw, minimum size=1.2cm, font=\ttfamily},
+        terminal/.style={circle, draw, double, double distance=2pt, minimum size=1.2cm, font=\ttfamily},
+        property/.style={draw, dashed, rectangle, minimum height=0.6cm, font=\small\ttfamily}]
+
+      % Nodes
+      \node[round] (abc) {abc};
+      \node[terminal, right=of abc] (xyz) {xyz};
+
+      % Property node attached to 'xyz'
+      \node[property, above=0.6cm of xyz] (left_fa) {left: [0-9]+};
+
+      % Dependency edge and property attachment
+      \path[->, thick] (abc) edge (xyz);
+      \draw[dashed, thick] (left_fa) -- (xyz);
+    \end{tikzpicture}
+    \caption{\texttt{RoseGraph} (Sub-FA as Vertex Property)}
+    \label{fig:rose_graph}
+  \end{subfigure}
+  \caption{The dependency graphs by Violet and Rose.}
+  \label{fig:graph_comparison}
+\end{figure}
+
+Consider an example of a regular expression \texttt{abc[0-9]+xyz}. If we discard heuristics for short literals, then the graphs returned by Violet and Rose are as in Figures \ref{fig:rose_in_graph} and \ref{fig:rose_graph}, respectively. They both mean that if there is a match of \texttt{abc} that \textit{ends} at position $i$ (excluded) and a match of \texttt{xyz} that \textit{starts} at position $j$ (included), such that $j-i>0$, then the subtext at $[i, j)$ must match the sub-FA \texttt{[0-9]+}. Further optimization imposes that 
+$$m \le j-i \le M,$$
+where $m$ and $M$ are the minimum and maximum \textit{widths} of the sub-FA, i.e., the minimum and maximum lengths of possible strings that match the sub-FA. 
+
+\section{Execution}
+
+An overview of the execution phase is illustrated in Figure \ref{fig:hs_scan_graph}. The process begins at \href{https://github.com/intel/hyperscan/blob/474d36044c50f0f8bdd51698cdec3329da79de9e/src/hs_runtime.h#L479}{\texttt{hs\_scan}}. There are three execution scenarios already determined by Rose: (1) the set of patterns are all literals (2) there are no literals that wake up FAs, and (3) literals wake up FAs. The last scenario is the most common. Its flow reaches \href{https://github.com/intel/hyperscan/blob/474d36044c50f0f8bdd51698cdec3329da79de9e/src/rose/rose.h#L41}{roseBlockExec}, where now one of its string matchers is called through \href{https://github.com/intel/hyperscan/blob/474d36044c50f0f8bdd51698cdec3329da79de9e/src/hwlm/hwlm.h#L116}{hwlmExec} together with a \href{https://github.com/intel/hyperscan/blob/474d36044c50f0f8bdd51698cdec3329da79de9e/src/rose/rose.h#L49}{roseCallback} function. The \texttt{roseCallback} function eventually calls \href{https://github.com/intel/hyperscan/blob/474d36044c50f0f8bdd51698cdec3329da79de9e/src/rose/program_runtime.h#L53}{roseRunProgram}. Here is where the \texttt{left} or \texttt{suffix} FAs are checked, waken up and executed.
+  
+\begin{figure}[ht]
+  \centering
+  \begin{tikzpicture}[
+    % Define node styles
+    function/.style={rectangle, draw, rounded corners, minimum height=2.5em, minimum width=3.5cm, text centered, font=\ttfamily},
+    object/.style={rectangle, draw, fill=gray!10, minimum height=2.5em, minimum width=3.5cm, text centered, font=\sffamily},
+    legend_box/.style={rectangle, draw, minimum height=1em, minimum width=1.5cm},
+    % Define edge styles
+    direct-call/.style={->, >=Stealth, thick},
+    indirect-call/.style={->, >=Stealth, dashed, thick},
+    linear-order/.style={draw, -{Triangle[open]}, thick},
+    relation/.style={->, >=Stealth, draw=gray!80}
+    ]
+
+    % --- Nodes ---
+    \node[function] (hs_scan) {hs\_scan};
+    \node[function, below=1cm of hs_scan] (roseBlockExec) {roseBlockExec};
+    \node[function, below=1cm of roseBlockExec] (hwlmExec) {hwlmExec};
+    \node[function, below=1cm of hwlmExec] (roseCallback) {roseCallback};
+    \node[function, below=1cm of roseCallback] (roseRunProgram) {roseRunProgram};
+
+    % --- Edges ---
+    \draw[indirect-call] (hs_scan) -- (roseBlockExec);
+    \draw[indirect-call] (roseBlockExec) -- (hwlmExec);
+    \draw[indirect-call] (hwlmExec) -- (roseCallback);
+    \draw[indirect-call] (roseCallback) -- (roseRunProgram);
+
+    % --- Legend ---
+    \begin{scope}[shift={(6, 0)}]
+      \draw[indirect-call] (0,-0.5) -- (1,-0.5) node[right, font=\footnotesize] {Indirect Call};
+    \end{scope}
+
+  \end{tikzpicture}
+  \caption{Dependency graph of main functions in the execution phase.}
+  \label{fig:hs_scan_graph}
+\end{figure}
+
+\section{The FDR Matcher}
+
+There are at least four SIMD-based string matchers in Hyperscan: Noodle is used when there is a single literal, Teddy \cite{qiu2021teddy} or Harry \cite{xu2023harry} when there are 2 to 300, and FDR when there are more than 300. The last three matchers are all prefilter-based. They group the literals into a set of \textit{buckets}, attempt to find if there may be a match in a bucket, then do exact matching for the literals in that bucket. 
+
+
+
+\section{Related Problems}
+
+
+\subsection{Optimizing regular expression decomposition}
+
+Probably, both representations in Figure \ref{fig:graph_comparison} are not ideal for a theoretical analysis. Firstly, the sub-FA may appear several times, even though it only appear once in the regular expression, for example in the case of \texttt{(abc|def)[0-9]+xyz}. Secondly, although in Figure \ref{fig:graph_comparison} we had to mark \texttt{xyz} as a terminal vertex, it is not precisely the case: the matching process terminates at the end of the sub-FA, not at the end of \texttt{xyz}. If there are remaining FAs or literals to the right, it is the sub-FA for \texttt{[0-9]+} that will determine the next matching position. Therefore, we propose a more convenient representation as follows. Each vertex is either a literal or a sub-FA. There are three types of directed edges. 
+\begin{itemize}
+  \item A type of edges whose each uses the end positions of the matches of the source vertex to determine the start positions of the matches of the target vertex. They connect two literals or a literal and a sub-FA. We call this type of edge \texttt{setStart}.
+  \item A type of edges whose each uses the start positions of the matches of the source vertex to determine the end positions of the matches of the target vertex. They connect a literal and a sub-FA. We call this type of edge \texttt{setEnd}.
+  \item A type of edges whose each acts as a pure trigger, without any position information. They connect two sub-FAs. We call this type of edge \texttt{trigger}.
+\end{itemize}
+
+Consider another example of \texttt{abc[0-9]+xyz(de)*}. In its dependency graph in the new representation is as in Figure \ref{fig:new_representation}.
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[
+      >=Stealth, 
+      node distance=3cm,
+      % Style for Literal Vertices
+      literal/.style={circle, draw, minimum size=1.4cm, font=\ttfamily, thick},
+      % Style for Sub-FA Vertices
+      subfa/.style={rectangle, draw, rounded corners=6pt, minimum size=1.4cm, font=\ttfamily, thick},
+      terminal literal/.style={literal, double, double distance=2pt},
+      terminal subfa/.style={subfa, double, double distance=2pt},
+      % Edge styling
+      edge_label/.style={font=\small\ttfamily, fill=white, inner sep=2pt}
+    ]
+
+    % Vertices
+    \node[literal] (abc) {abc};
+    \node[literal, right=3cm of abc] (xyz) {xyz};
+    \node[subfa, below right= 1.5cm and 1cm of abc] (digits) {[0-9]+};
+    \node[terminal subfa, right= 3cm of digits] (de) {(de)*};
+
+    % Paths/Edges
+    \path[->, thick] (abc) edge node[above, edge_label] {setStart} (digits);
+    \path[->, thick] (abc) edge node[above, edge_label] {setStart} (xyz);
+    \path[->, thick] (xyz) edge node[above, edge_label] {setEnd} (digits);
+    \path[->, thick] (xyz) edge node[above, edge_label] {setStart} (de);
+    \path[->, thick] (digits) edge node[above, edge_label] {} (de);
+
+  \end{tikzpicture}
+  \caption{Proposed sequential dependency graph representation for \texttt{abc[0-9]+xyz}.}
+  \label{fig:new_representation}
+\end{figure}
+
+\subsection{Analysis of the FDR string matcher}
+
+\subsection{Statistics of regular expressions}
