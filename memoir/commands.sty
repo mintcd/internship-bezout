@@ -1,5 +1,19 @@
+
+
 \ProvidesPackage{commands}
+
 \RequirePackage{mathtools}
+\RequirePackage{tikz}
+
+\usetikzlibrary{calc, positioning, arrows.meta, shapes.geometric, fit, backgrounds, automata}
+
+\tikzset{
+    >=Stealth,
+    node distance=2.5cm,
+    round/.style={circle, draw, minimum size=1.2cm, font=\ttfamily},
+    terminal/.style={circle, draw, double, double distance=2pt, minimum size=1.2cm, font=\ttfamily},
+    init/.style={initial, initial text=, initial where=left}
+} 
 
 \definecolor{gustave}{HTML}{1d2392}
 
