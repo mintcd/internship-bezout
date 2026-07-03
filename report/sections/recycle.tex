@@ -85,3 +85,10 @@ $$p_f(\mu) = \left|\int_S f(x) d\mu\right|.$$
 
   A sequence of random variables $(Z_n)$ is tight if for every $\varepsilon > 0$, there exists $M > 0$ such that $\sup_n\PP(|Z_n| > M) < \varepsilon$.
 \end{definition}
+
+% Our first goal is to escape from the max operator in \eqref{eq:lower-bound-tighter}. A challenge is that $(z_n)$ fluctuates at the first iterations, and the time where it begins to increase depends on the parameters $u$ and $v$. We will show that $(z_n)$ is eventually increasing, that is,
+% $$\exists N' \in \mathbb{N}, \forall n \ge N', \quad z_{n+1} \ge z_n.$$
+% Together with unboundedness of $(z_n)$, if this statement is true, we have the following implications
+% $$\exists N' \in \mathbb{N}, \forall n \ge N', \quad z_{n+1} \ge \max_{1 \le i \le n} z_i.$$
+% Taking $N = 2N'-1$, we derive that
+% $$\exists N \in \mathbb{N}, \forall n \ge N, \forall (N+1)/2\le i \le N, \quad z_{i} \ge z_{n+1-i}.$$
