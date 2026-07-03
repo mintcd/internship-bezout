@@ -1,5 +1,3 @@
-
-
 \ProvidesPackage{commands}
 
 \RequirePackage{mathtools}
@@ -22,11 +20,6 @@
 \newcommand{\bigquestion}{\mathop{?}\limits}
 \newcommand{\bigbar}{\mathop{\scalebox{1.5}{$|$}}\limits}
 
-\DeclarePairedDelimiter{\doublebrace}{\{\!\!\{}{\}\!\!\}}
-\DeclarePairedDelimiter{\doublebracket}{[\!\![}{]\!\!]}
-\DeclarePairedDelimiter{\doubleangle}{\langle\!\langle}{\rangle\!\rangle}
-\newcommand{\matchh}{\,_h\!\!\sim_*}
-
 
 \ExplSyntaxOn
 
@@ -45,9 +38,17 @@
 
 \ExplSyntaxOff
 
-\newcommand{\project}{\!\!\downharpoonright}
-\DeclareMathOperator*{\compose}{\mathop{\scalerel*{\mid}{\sum}}}
-
+\makeatletter
+\newcommand{\myspace}[1]{%
+  \begingroup
+  \@tempcnta=#1\relax
+  \loop\ifnum\@tempcnta>0
+  \,%
+  \advance\@tempcnta by -1\relax
+  \repeat
+  \endgroup
+}
+\makeatother
 
 \renewcommand{\d}{\,\mathrm{d}}
 \newcommand{\xbf}{\mathbf{x}}

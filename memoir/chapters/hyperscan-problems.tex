@@ -94,12 +94,12 @@ In \texttt{doInitialVioletTransform}, the graph analyses described in the Hypers
 \begin{figure}[htbp]
   \centering
   \begin{subfigure}[b]{0.48\textwidth}
-  
-  \centering
-  \begin{tikzpicture}
 
-  % Nodes
-  \node[round, init] (abc) {abc};
+    \centering
+    \begin{tikzpicture}
+
+      % Nodes
+      \node[round, init] (abc) {abc};
       \node[terminal, right=of abc] (xyz) {xyz};
 
       % Edge representing the sub-FA
@@ -252,3 +252,13 @@ Consider another example of \texttt{abc[0-9]+xyz(de)*}. In its dependency graph 
 \subsection{Analysis of the FDR string matcher}
 
 \subsection{Statistics of regular expressions}
+
+Suppose that the regex trees are generated according to a BST-like distribution. The average length of the longest literals of an $n$-node tree satisfies the recurrence
+\begin{equation}
+  \label{eq:longest-literal-recurrence}
+  Y_{n+2} \stackrel{d}{=} I\left(Y_{U_n}^{(1)} + Y_{n+1-U_n}^{(2)}\right) + J\max\left(Y_{U_n}^{(1)}, Y_{n+1-U_n}^{(2)}\right), n\ge 1, \quad Y_1=1, Y_2=0.
+\end{equation}
+
+Superscripts denote mutually independent copies. The variable $U_n$ is uniformly distributed on $\{1, \ldots, n\}$. The variables $I$ and $J$ are Bernoulli distributed with expectations $u$ and $v$ respectively, such that $I + J \le 1$. We reuse the same variables $Y_{U_n}^{(1)}, Y_{n+1-U_n}^{(2)}$ and $U_n$ across both terms, since the branches are not taken at the same time. The variables $I$ and $J$ are also reused, since at every new iteration, we sample a new subtree independently.
+
+Details analysis for the asymptotic behavior of $\EE[Y_n]$ is given in the next chapter.
