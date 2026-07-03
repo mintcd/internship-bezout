@@ -1,15 +1,16 @@
 import numpy as np
 from monte_carlo import sample_from_empirical
+from solver import mean_preserving_alpha
 
-def T(X, u,v, alpha):
+def T(X, u, v, alpha):
     # Sample independent pairs
     X1 = sample_from_empirical(X)
     X2 = sample_from_empirical(X)
     
     # Sample U, I and J
     U = np.random.uniform(0, 1, size=len(X))
+
     R = np.random.uniform(0, 1, size=len(X))
-    
     I = (R < u).astype(np.float64)
     J = ((R >= u) & (R < u + v)).astype(np.float64)
     
@@ -29,21 +30,45 @@ def T_independent(X, u, v, alpha):
     # Sample U
     U1 = np.random.uniform(0, 1, size=len(X))
     U2 = np.random.uniform(0, 1, size=len(X))
+
+    R = np.random.uniform(0, 1, size=len(X))
+    I = (R < u).astype(np.float64)
+    J = ((R >= u) & (R < u + v)).astype(np.float64)
     
     # Apply the operator T_alpha
     term1 = (U1**alpha) * X1
-    term2 = ((1 - U2)**alpha) * X2
+    term2 = (U2**alpha) * X2
     
-    T_X = term1 + term2
+    T_X = I * (term1 + term2) + J * np.maximum(term1, term2)
 
     return T_X
 
+def T_same(X, u, v, alpha):
+    # Sample independent pairs
+    X1 = sample_from_empirical(X)
+    X2 = sample_from_empirical(X)
+
+    # Sample U and use the same for both branches
+    U = np.random.uniform(0, 1, size=len(X))
+    U_alpha = U**alpha
+
+    R = np.random.uniform(0, 1, size=len(X))
+    I = (R < u).astype(np.float64)
+    J = ((R >= u) & (R < u + v)).astype(np.float64)
+
+    # Apply the operator T_alpha
+    term1 = U_alpha * X1
+    term2 = U_alpha * X2
+
+    T_X = I * (term1 + term2) + J * np.maximum(term1, term2)
+
+    return T_X
 
 def S(X, u, v, alpha):
     TX = T(X, u, v, alpha)
     return TX/np.mean(TX)
 
-def T_for_positive(Z, u, v, alpha):
+def T_positive(Z, u, v, alpha):
     """
     Applies the transformation operator for the conditional random variable Z.
     Requires an external `sample_from_empirical(X)` function, which can be defined as:
@@ -87,3 +112,9 @@ def T_for_positive(Z, u, v, alpha):
     )
 
     return T_Z
+
+
+def Phi(X, u, v):
+    alpha = mean_preserving_alpha(X, lambda X, alpha: T(X, u, v, alpha), bracket=[0, 1])
+    print(f"Found alpha: {alpha}")
+    return T(X, u, v, alpha)

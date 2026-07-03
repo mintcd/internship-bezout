@@ -15,7 +15,7 @@ class MeanOneGenerator:
             (stats.lognorm, {'s': lambda: np.random.uniform(0.5, 2.0)}),  # Heavy right tail
             (stats.gamma, {'a': lambda: np.random.uniform(0.5, 5.0)}),    # Flexible skew
             (stats.weibull_min, {'c': lambda: np.random.uniform(0.5, 2.0)}), # Extreme value
-            # (stats.halfcauchy, {'loc': lambda: 0, 'scale': lambda: 1})    # Extreme heavy tail (dont't use because it doesn't have a finite mean)
+            (stats.halfcauchy, {'loc': lambda: 0, 'scale': lambda: 1})    # Extreme heavy tail
         ]
 
     def generate_uniform_shape(self, width=None):
@@ -29,7 +29,7 @@ class MeanOneGenerator:
     
       return X, "uniform", {"low": 1.0 - width, "high": 1.0 + width}
     
-    def generate_custom_shape(self, shape: Literal["uniform", "lognorm", "gamma", "dirac", "weibull_min"]):
+    def generate_custom_shape(self, shape: Literal["uniform", "lognorm", "gamma", "dirac", "weibull_min", "halfcauchy"]):
         if shape == "uniform":
             return self.generate_uniform_shape()
         elif shape == "dirac":
@@ -37,7 +37,7 @@ class MeanOneGenerator:
             X = np.ones(self.size)
             return X, "dirac", {}
         else:
-            dist_class, param_generators = self.distribution_bank[{"lognorm": 0, "gamma": 1, "weibull_min": 2}[shape]]
+            dist_class, param_generators = self.distribution_bank[{"lognorm": 0, "gamma": 1, "weibull_min": 2, "halfcauchy": 3}[shape]]
             
             # Evaluate the random parameters
             params = {k: v() for k, v in param_generators.items()}
@@ -149,17 +149,18 @@ def plot_distribution(
     plt.tight_layout()
     plt.show()
 
-def wasserstein(X, Y, p=1):
+def less_than_in_convex_order(X, Y, num_samples=100000):
+    """Check if X is less than Y in convex order by sampling."""
+    samples_X = np.random.choice(X, size=num_samples, replace=True)
+    samples_Y = np.random.choice(Y, size=num_samples, replace=True)
 
-    X = np.asarray(X)
-    Y = np.asarray(Y)
+    true = 0
+    false = 0
+
+    for t in np.linspace(0, max(max(X), max(Y)), 100):
+        if np.mean(np.maximum(samples_X - t, 0)) <= np.mean(np.maximum(samples_Y - t, 0)):
+            true += 1
+        else:
+            false += 1
     
-    if len(X) != len(Y):
-        raise ValueError(f"Distributions must have the same length. "
-                         f"Got len(X)={len(X)} and len(Y)={len(Y)}.")
-  
-    X_sorted = np.sort(X)
-    Y_sorted = np.sort(Y)
-    distance = np.power(np.mean(np.abs(X_sorted - Y_sorted)**p), 1/p)
-    
-    return distance
+    return true/(true + false)
