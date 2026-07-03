@@ -1,0 +1,4 @@
+[submodule "memoir"]
+	path = memoir
+	url = https://github.com/mintcd/m2-bezout-internship-memoir.git
+	branch = main
