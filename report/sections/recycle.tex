@@ -92,3 +92,18 @@ $$p_f(\mu) = \left|\int_S f(x) d\mu\right|.$$
 % $$\exists N' \in \mathbb{N}, \forall n \ge N', \quad z_{n+1} \ge \max_{1 \le i \le n} z_i.$$
 % Taking $N = 2N'-1$, we derive that
 % $$\exists N \in \mathbb{N}, \forall n \ge N, \forall (N+1)/2\le i \le N, \quad z_{i} \ge z_{n+1-i}.$$
+
+The next open question is then if there exists a measure of chaos that can capture whether $T_\alpha$ increases or decreases the mean, for a given $\alpha$. In particular, we consider the class of $\Phi$-entropies \cite{chafai2004entropies} that generalized both the variance and the Shannon entropy. The $\Phi$-entropy of a random variable $X$ is defined as
+\begin{equation}
+  \textbf{Ent}_{\Phi}(X) = \mathbb{E}[\Phi(X)] - \Phi(\mathbb{E}[X]),
+\end{equation}
+where $\Phi$ is a convex function. The variance is a special case of $\Phi$-entropy with $\Phi(x) = x^2$. The Shannon entropy is another special case with $\Phi(x) = x\ln x$. We leave the following question open.
+
+\begin{openquestion}
+  \label{openq:entropy}
+  Is there a convex function $\Phi$ such that there exists a monotone function $\alpha: \RR_+ \to [0,1]$ such that for every $\mu$ in some subset of $\D$ and $X\sim \mu$, we have $\alpha(\textbf{Ent}_{\Phi}(X)) = \EE[X]$?
+\end{openquestion}
+
+That means we ask if it is possible to find which $\alpha$ that keeps the mean of $\mu$, just by looking at the $\Phi$-entropy of $X\sim\mu$. A more tractable question is stated and proved as follows.
+
+statement is true and provable: for each $\mu$, there exists a unique $\alpha$ such that $\EE[T_\alpha(\mu)] = \EE[\mu]$.
