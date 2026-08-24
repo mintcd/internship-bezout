@@ -106,7 +106,7 @@ $$(b[0\ldots s-8)\ll 8) \,|\, a.$$
 If a character is at the end of a patterns, for example $b$ in the pattern $ab$, then we assign the mask for
 $$0\ll 8 \,|\, b.$$
 
-But now, the algorithms may \textit{fail} to report the match of $ab$ at bucket $B_0$ that ends at position $2$ for the given text $babc$. The reason is that when scanning the second $b$, it looks and ors the mask for the super-character $(b[0\ldots s-8)\ll 8) \,|\, c$ instead of the mask for $0\ll 8 \,|\, b$. The idea is to set the bit(s) that may introduce a wrong contradiction to $0$ in the mask for the super-character beforehand. More precisely, if a character $c$ appears at position $0$ of a pattern (that is, a bit confusing, at the end!) in bucket $B_j$, then we set the bit at position $j$ to $0$ in the mask for the super-character
+But now, the algorithms may \textit{fail} to report the match of $ab$ at bucket $B_0$ that ends at position $2$ for the given text $babc$. The reason is that when scanning the second $b$, it looks and ors the mask for the super-character $(b[0\ldots s-8)\ll 8) \,|\, c$ instead of the mask for $0\ll 8 \,|\, b$. The idea is to set the bit(s) that may introduce a wrong contradiction to $0$ in the mask for the super-character beforehand. More precisely, if a character $c$ appears at position $0$ of a pattern in bucket $B_j$, then we set the bit at position $j$ to $0$ in the mask for the super-character
 $$(x[0\ldots s-8)\ll 8) \,|\, c$$
 for \textit{every} character $x$. This can be done more efficiently, as in fact there are only $2^{s-8}$ such super-characters. The corrected compilation pseudocode is given in Algorithm~\ref{alg:compilation-super}. The changes or additions are highlighted in \textcolor{gustave}{blue}.
 
