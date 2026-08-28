@@ -2,3 +2,7 @@
 	path = memoir
 	url = https://github.com/mintcd/m2-bezout-internship-memoir.git
 	branch = main
+[submodule "slides"]
+	path = slides
+	url = https://github.com/mintcd/m2-bezout-internship-slides.git
+	branch = main
